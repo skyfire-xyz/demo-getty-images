@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 
 import { ImageDetailsModal } from "./image-download-modal"
 
-const ITEMS_PER_PAGE = 30
+export const ITEMS_PER_PAGE = 30
 const IMAGE_HEIGHT = 250 // Fixed height for all images
 
 export default function ImagesSearchWithPagination() {

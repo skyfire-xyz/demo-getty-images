@@ -23,6 +23,9 @@ interface GettyImagesContextType {
   error: string | null
   downloadedItems: DownloadedItem[]
   searchTerm: string
+  totalImages: number
+  currentPage: number
+  totalPages: number
   setSearchTerm: (term: string) => void
   searchImages: (
     phrase: string,
@@ -58,6 +61,9 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [searchLoading, setSearchLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [totalImages, setTotalImages] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
 
   useEffect(() => {
     const storedItems = localStorage.getItem("downloadedItems")
@@ -81,7 +87,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
           metadataForAgent: {
             title: `Getty Images Search: ${phrase}`,
             useWithChat: true,
-            correspondingPageURLs: ["/search"],
+            correspondingPageURLs: ["/"],
             customPrompts: [
               "Can you describe the images?",
               "What are the most common themes in these images?",
@@ -90,6 +96,9 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       )
       setSearchResults(response.data.images)
+      setTotalImages(response.data.result_count)
+      setCurrentPage(page)
+      setTotalPages(Math.ceil(response.data.result_count / pageSize))
       setSearchLoading(false)
       return response.data
     } catch (err) {
@@ -114,18 +123,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
       const randomTerm =
         randomTerms[Math.floor(Math.random() * randomTerms.length)]
       const response = await client.get<ImageSearchResponse>(
-        `v1/receivers/getty-images/search/images/creative?phrase=${randomTerm}&page=${page}&page_size=${pageSize}`,
-        {
-          metadataForAgent: {
-            title: `Getty Images Background: ${randomTerm}`,
-            useWithChat: true,
-            correspondingPageURLs: ["/"],
-            customPrompts: [
-              "Can you describe the background images?",
-              "What are the most common themes in these background images?",
-            ],
-          },
-        }
+        `v1/receivers/getty-images/search/images/creative?phrase=${randomTerm}&page=${page}&page_size=${pageSize}`
       )
       setBackgroundImages(response.data.images)
       setLoading(false)
@@ -150,11 +148,8 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
           metadataForAgent: {
             title: `Getty Image Download: ${id}`,
             useWithChat: true,
-            correspondingPageURLs: ["/image/[id]"],
-            customPrompts: [
-              "Can you describe this image in detail?",
-              "What are the key elements in this image?",
-            ],
+            correspondingPageURLs: ["/"],
+            customPrompts: [],
           },
         }
       )
@@ -214,6 +209,9 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         error,
         downloadedItems,
         searchTerm,
+        totalImages,
+        currentPage,
+        totalPages,
         setSearchTerm,
         searchImages,
         fetchBackgroundImages,

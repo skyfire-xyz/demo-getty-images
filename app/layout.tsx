@@ -46,8 +46,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <SkyfireProvider>
               <GettyImagesProvider>
-                <div className="relative flex min-h-screen flex-col pb-20">
-                  <SiteHeader />
+                <div className="relative flex min-h-screen flex-col">
                   <SkyfireWidget
                     tos={{
                       name: "Terms of Service",

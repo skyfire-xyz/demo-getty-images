@@ -88,10 +88,7 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
     // Response interceptor
     instance.interceptors.response.use(
       async (response) => {
-        if (
-          response.config.url?.includes("proxy") &&
-          response.config.metadataForAgent?.useWithChat
-        ) {
+        if (response.config.metadataForAgent?.useWithChat) {
           if (response.config.metadataForAgent?.customizeResponse) {
             pushResponse(
               response.config.metadataForAgent?.customizeResponse(response)

@@ -1,37 +1,69 @@
 import { useGettyImages } from "@/lib/getty-images/context"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
-export function SearchInfo() {
-  const { searchTerm, searchResults, currentPage, itemsPerPage } =
-    useGettyImages()
+import { ITEMS_PER_PAGE } from "./getty-image-search-with-pagination"
 
-  const totalResults =
-    searchResults.length > 0 ? searchResults[0].result_count : 0
-  const startItem = (currentPage - 1) * itemsPerPage + 1
-  const endItem = Math.min(currentPage * itemsPerPage, totalResults)
+export function SearchInfo() {
+  const {
+    searchTerm,
+    searchResults,
+    currentPage,
+    totalPages,
+    totalImages,
+    searchImages,
+    searchLoading,
+  } = useGettyImages()
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      searchImages(searchTerm, newPage, ITEMS_PER_PAGE)
+    }
+  }
+
+  if (!searchTerm) return null
 
   return (
     <div className="container mx-auto mb-4">
-      <Card className="">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Search Results</h2>
-          {searchTerm && (
-            <p className="text-sm text-gray-600">
+      <Card>
+        <CardContent className="p-4 flex items-end">
+          <div>
+            <p className="text-sm mb-2">
               Showing results for:{" "}
-              <span className="font-medium">{searchTerm}</span>
+              <h2 className="inline font-bold text-2xl">{searchTerm}</h2>
             </p>
-          )}
-          {totalResults > 0 && (
-            <p className="text-sm text-gray-600">
-              Displaying items {startItem} - {endItem} of {totalResults} total
-              results
-            </p>
-          )}
-          {totalResults === 0 && searchTerm && (
-            <p className="text-sm text-gray-600">
-              No results found for your search.
-            </p>
-          )}
+            {/* {searchResults.length > 0 && (
+              <p className="text-sm mb-4">
+                Displaying items {startItem.toLocaleString()} -{" "}
+                {endItem.toLocaleString()} of {totalImages.toLocaleString()}{" "}
+                total results
+              </p>
+            )} */}
+            <div>
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-2">
+                  <Button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1 || searchLoading}
+                    size="sm"
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm">
+                    Page {currentPage.toLocaleString()} of{" "}
+                    {totalPages.toLocaleString()}
+                  </span>
+                  <Button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages || searchLoading}
+                    size="sm"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -16,7 +16,9 @@ export function addDatasets(
   })
   if (systemMessages.length > 0) {
     setMessages((prevMessages) => {
-      const messages = prevMessages.filter((msg) => msg.role !== "system")
+      const messages = prevMessages.filter(
+        (msg) => msg.role !== "system" || msg.id === "instruction"
+      )
       return concatenateMessages([systemMessages, messages])
     })
   }
