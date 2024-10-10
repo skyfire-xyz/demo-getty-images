@@ -12,6 +12,7 @@ export const initialState: SkyfireState = {
   loading: false,
   error: null,
   responses: [],
+  tosAgreed: false,
 }
 
 export const skyfireReducer = (
@@ -66,6 +67,12 @@ export const skyfireReducer = (
       return {
         ...state,
         responses: [],
+      }
+    case ActionType.UPDATE_TOS_AGREEMENT:
+      localStorage.setItem("tosAgreed", JSON.stringify(action.payload))
+      return {
+        ...state,
+        tosAgreed: action.payload,
       }
     default:
       return state

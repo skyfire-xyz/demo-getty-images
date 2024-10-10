@@ -17,15 +17,28 @@ import {
   useSkyfire,
   useSkyfireAPIKey,
   useSkyfireState,
+  useSkyfireTOSAgreement,
 } from "../context/context"
 import { Toaster } from "../shadcn/ui/toaster"
 import { usdAmount } from "../util"
 import { ApiKeyConfig } from "./api-key-config"
+import { APIKeyConfigWithTOS } from "./api-key-config-with-tos"
 import LoadingImageWidget from "./loadingImage"
 import { WalletInterface } from "./wallet"
 
-export default function SkyfireWidget() {
+interface TOSObject {
+  name: string
+  tos?: string
+  link?: string
+}
+
+interface SkyfireWidgetProps {
+  tos?: TOSObject
+}
+
+export default function SkyfireWidget({ tos }: SkyfireWidgetProps) {
   const { localAPIKey, isReady } = useSkyfireAPIKey()
+  const { tosAgreed } = useSkyfireTOSAgreement()
   const { getClaimByReferenceID } = useSkyfire()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const aiChatProps = useChat({
@@ -47,12 +60,16 @@ export default function SkyfireWidget() {
 
   const loading = useLoadingState()
   const { balance } = useSkyfireState()
-  const [isDialogOpen, setIsDialogOpen] = useState(isReady && !localAPIKey)
-  const [showWidget, setShowWidget] = useState(isReady && !!localAPIKey)
+  const [isDialogOpen, setIsDialogOpen] = useState(
+    isReady && (!localAPIKey || (tos && !tosAgreed))
+  )
+  const [showWidget, setShowWidget] = useState(
+    isReady && !!localAPIKey && (!tos || tosAgreed)
+  )
 
   useEffect(() => {
     if (isReady) {
-      if (localAPIKey) {
+      if (localAPIKey && (!tos || tosAgreed)) {
         setIsDialogOpen(false)
         setShowWidget(true)
       } else {
@@ -60,7 +77,7 @@ export default function SkyfireWidget() {
         setShowWidget(false)
       }
     }
-  }, [localAPIKey, isReady])
+  }, [localAPIKey, tosAgreed, isReady, tos])
 
   const minimizedVariants = {
     hidden: {
@@ -86,12 +103,14 @@ export default function SkyfireWidget() {
     },
   }
 
+  const ConfigComponent = tos ? APIKeyConfigWithTOS : ApiKeyConfig
+
   return (
     <div className="skyfire-theme">
       <Dialog open={isDialogOpen || !!error}>
         <DialogOverlay />
         <DialogContent className="skyfire-theme sm:max-w-[425px]">
-          <ApiKeyConfig error={error} />
+          <ConfigComponent error={error} tos={tos} />
         </DialogContent>
       </Dialog>
       <AnimatePresence>
@@ -99,7 +118,9 @@ export default function SkyfireWidget() {
           <Popover>
             <PopoverTrigger asChild>
               <motion.div
-                initial={localAPIKey ? "visible" : "hidden"}
+                initial={
+                  localAPIKey && (!tos || tosAgreed) ? "visible" : "hidden"
+                }
                 animate="visible"
                 exit="hidden"
                 variants={minimizedVariants}

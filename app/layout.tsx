@@ -3,6 +3,7 @@ import { Metadata } from "next"
 
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
+import { GettyImagesProvider } from "@/lib/getty-images/context"
 import SkyfireWidget from "@/lib/skyfire-sdk/components/skyfire-widget"
 import { SkyfireProvider } from "@/lib/skyfire-sdk/context/context"
 import { cn } from "@/lib/utils"
@@ -44,14 +45,19 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <SkyfireProvider>
-              <>
+              <GettyImagesProvider>
                 <div className="relative flex min-h-screen flex-col pb-20">
                   <SiteHeader />
-                  <SkyfireWidget />
+                  <SkyfireWidget
+                    tos={{
+                      name: "Terms of Service",
+                      link: "https://www.gettyimages.ca/company/terms",
+                    }}
+                  />
                   <div className="flex-1">{children}</div>
                 </div>
                 <TailwindIndicator />
-              </>
+              </GettyImagesProvider>
             </SkyfireProvider>
           </ThemeProvider>
         </body>

@@ -11,6 +11,7 @@ export enum ActionType {
   UPDATE_ERROR = "UPDATE_ERROR",
   ADD_RESPONSE = "ADD_RESPONSE",
   CLEAR_RESPONSES = "CLEAR_RESPONSES", // New action type
+  UPDATE_TOS_AGREEMENT = "UPDATE_TOS_AGREEMENT",
 }
 
 interface UpdateSkyfireInfoAction {
@@ -52,6 +53,11 @@ interface ClearResponsesAction {
   type: ActionType.CLEAR_RESPONSES
 }
 
+interface UpdateTOSAgreementAction {
+  type: ActionType.UPDATE_TOS_AGREEMENT
+  payload: boolean
+}
+
 // Actions Types
 export type SkyfireAction =
   | UpdateSkyfireInfoAction
@@ -62,6 +68,7 @@ export type SkyfireAction =
   | UpdateErrorAction
   | AddResponseAction
   | ClearResponsesAction
+  | UpdateTOSAgreementAction
 
 // Actions
 export const updateSkyfireInfo = (data: SkyfireState): SkyfireAction => ({
@@ -107,4 +114,10 @@ export const addResponse = (response: AxiosResponse): SkyfireAction => ({
 
 export const clearResponses = (): SkyfireAction => ({
   type: ActionType.CLEAR_RESPONSES,
+})
+
+// Add a new action creator
+export const updateTOSAgreement = (agreed: boolean): SkyfireAction => ({
+  type: ActionType.UPDATE_TOS_AGREEMENT,
+  payload: agreed,
 })

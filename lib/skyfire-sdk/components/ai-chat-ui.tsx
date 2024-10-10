@@ -6,7 +6,6 @@ import { UseChatHelpers, useChat } from "ai/react"
 import { Axios, AxiosResponse } from "axios"
 import { AlertCircle, ChevronDown, X } from "lucide-react"
 
-import { getUrlParameter } from "@/lib/utils"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"

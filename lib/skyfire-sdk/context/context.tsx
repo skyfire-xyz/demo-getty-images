@@ -19,6 +19,7 @@ import {
   updateSkyfireAPIKey,
   updateSkyfireClaims,
   updateSkyfireWallet,
+  updateTOSAgreement,
 } from "@/lib/skyfire-sdk/context/action"
 
 import { toast } from "../shadcn/hooks/use-toast"
@@ -133,6 +134,16 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     const apiKey = getApiKeyFromLocalStorage()
     dispatch(updateSkyfireAPIKey(apiKey))
+  }, [])
+
+  useEffect(() => {
+    const apiKey = getApiKeyFromLocalStorage()
+    dispatch(updateSkyfireAPIKey(apiKey))
+
+    const tosAgreed = localStorage.getItem("tosAgreed")
+    if (tosAgreed !== null) {
+      dispatch(updateTOSAgreement(JSON.parse(tosAgreed)))
+    }
   }, [])
 
   async function fetchUserBalance() {
@@ -275,4 +286,18 @@ function filterResponsesByUrl(
     const urls = response.config.metadataForAgent?.correspondingPageURLs || []
     return isUrlMatch(pathname, urls)
   })
+}
+
+// Add a new hook to easily access and update the TOS agreement state
+export const useSkyfireTOSAgreement = () => {
+  const { state, dispatch } = useSkyfire()
+
+  const setTOSAgreement = (agreed: boolean) => {
+    dispatch(updateTOSAgreement(agreed))
+  }
+
+  return {
+    tosAgreed: state.tosAgreed,
+    setTOSAgreement,
+  }
 }

@@ -88,4 +88,5 @@ export interface SkyfireState {
   loading?: boolean
   error: AxiosError | null
   responses: AxiosResponse[]
+  tosAgreed?: boolean
 }
