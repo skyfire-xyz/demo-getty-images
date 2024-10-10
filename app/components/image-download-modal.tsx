@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Download } from "lucide-react"
+import { Download, Info } from "lucide-react"
 
 import { useGettyImages } from "@/lib/getty-images/context"
+import { calculateEstimatedPrice } from "@/lib/getty-images/util"
 import { toast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,12 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface ImageDetailsModalProps {
   isOpen: boolean
@@ -150,13 +157,36 @@ export function ImageDetailsModal({
                           {size.name} ({size.width}x{size.height})
                         </Label>
                       </div>
-                      <Badge variant="secondary">
-                        {(size.bytes / 1024 / 1024).toFixed(2)} MB
-                      </Badge>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="secondary">
+                          {(size.bytes / 1024 / 1024).toFixed(2)} MB
+                        </Badge>
+                        <Badge variant="outline">
+                          $
+                          {calculateEstimatedPrice(
+                            size.width,
+                            size.height
+                          ).toFixed(2)}
+                        </Badge>
+                      </div>
                     </div>
                   )
                 )}
               </RadioGroup>
+              <p className="mt-4 flex">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="ml-auto text-sm text-gray-500 flex items-center">
+                        Estimated Prices <Info className="ml-1 h-4 w-4" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Prices are estimates and may vary</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </p>
             </div>
           </div>
         </div>

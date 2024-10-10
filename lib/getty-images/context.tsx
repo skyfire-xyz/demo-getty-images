@@ -22,11 +22,13 @@ interface GettyImagesContextType {
   searchLoading: boolean
   error: string | null
   downloadedItems: DownloadedItem[]
+  searchTerm: string
+  setSearchTerm: (term: string) => void
   searchImages: (
     phrase: string,
     page: number,
     pageSize: number
-  ) => Promise<void>
+  ) => Promise<ImageSearchResponse>
   fetchBackgroundImages: (page: number, pageSize: number) => Promise<void>
   downloadImage: (
     id: string,
@@ -55,6 +57,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(false)
   const [searchLoading, setSearchLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     const storedItems = localStorage.getItem("downloadedItems")
@@ -67,8 +70,8 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     phrase: string,
     page: number,
     pageSize: number
-  ) => {
-    if (!client) return
+  ): Promise<ImageSearchResponse> => {
+    if (!client) throw new Error("API client not available")
     setSearchLoading(true)
     setError(null)
     try {
@@ -87,10 +90,12 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       )
       setSearchResults(response.data.images)
-      setLoading(false)
+      setSearchLoading(false)
+      return response.data
     } catch (err) {
       setError("Failed to fetch images")
-      setLoading(false)
+      setSearchLoading(false)
+      throw err
     }
   }
 
@@ -176,7 +181,6 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
           : item
       )
     )
-    // Update localStorage
     localStorage.setItem("downloadedItems", JSON.stringify(downloadedItems))
   }
 
@@ -192,7 +196,6 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     setDownloadedItems((prevItems) =>
       prevItems.filter((item) => item.downloadResult.id !== id)
     )
-    // Update localStorage
     localStorage.setItem(
       "downloadedItems",
       JSON.stringify(
@@ -210,6 +213,8 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         searchLoading,
         error,
         downloadedItems,
+        searchTerm,
+        setSearchTerm,
         searchImages,
         fetchBackgroundImages,
         downloadImage,

@@ -11,3 +11,12 @@ export function getHighestResolutionImage(display_sizes: DisplaySize[]) {
   }
   return display_sizes.length > 0 ? display_sizes[0].uri : null
 }
+
+export const calculateEstimatedPrice = (
+  width: number,
+  height: number
+): number => {
+  const pixelCount = width * height
+  const basePrice = pixelCount / 10000000
+  return basePrice
+}
