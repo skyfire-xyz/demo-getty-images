@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'imagedelivery.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'delivery.gettyimages.com',
+      },
     ],
   }
 }
