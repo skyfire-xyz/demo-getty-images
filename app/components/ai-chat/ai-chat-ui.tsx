@@ -128,7 +128,6 @@ export default function AIChatUI({
               <div className="mx-2 p-3 rounded-lg bg-muted max-w-[calc(100%-50px)]">
                 <p className="mb-2">
                   Welcome to the Getty Images AI Agent. what can I do for you?
-                  {responses.length > 0 ? ` or select an option below` : ""}?
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {responses.map((response) => {
