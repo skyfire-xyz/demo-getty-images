@@ -157,7 +157,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         "v1/receivers/getty-images/images/download",
         {
           id,
-          height: `${height}px`,
+          height: `${height}`,
           size,
           tosConfirmation: tosConfirmation.tosAgreed,
           userEmail: "koji@skyfire.xyz",
@@ -229,7 +229,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
             title: "Getty Images Purchase History",
             useWithChat: true,
             correspondingPageURLs: ["/"],
-            customPrompts: ["Tell me about my purchase history"],
+            customPrompts: [],
           },
         }
       )

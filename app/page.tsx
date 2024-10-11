@@ -91,7 +91,7 @@ For all other queries unrelated to purchase history or image searches, you may r
   const rightPanel = (
     <>
       {!searchTerm && !showHistory && (
-        <div className="flex h-full items-center">
+        <div className="flex h-full items-center overflow-hidden">
           <AnimatedAspectRatioImageGallery />
         </div>
       )}
@@ -108,6 +108,8 @@ For all other queries unrelated to purchase history or image searches, you may r
       )}
     </>
   )
+
+  if (!localAPIKey) return null
 
   return (
     <div className="min-h-screen bg-background">
