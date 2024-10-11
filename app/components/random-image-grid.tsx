@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 
 import { useGettyImages } from "@/lib/getty-images/context"
 import { getHighestResolutionImage } from "@/lib/getty-images/util"
@@ -87,11 +88,14 @@ export function AnimatedAspectRatioImageGallery() {
                         width: `${imageWidth}px`,
                       }}
                     >
-                      <img
-                        src={getHighestResolutionImage(image.display_sizes)}
+                      <Image
+                        src={
+                          getHighestResolutionImage(image.display_sizes) || ""
+                        }
                         alt={image.title}
                         className="w-full h-full object-cover transition-all duration-300 filter brightness-50 group-hover:filter-none"
                         loading="lazy"
+                        fill={true}
                       />
                       <CardContent className="p-4 absolute inset-0 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between">
                         <h2 className="text-sm font-semibold line-clamp-2">

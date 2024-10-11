@@ -36,7 +36,7 @@ interface GettyImagesContextType {
     phrase: string,
     page: number,
     pageSize: number
-  ) => Promise<ImageSearchResponse>
+  ) => Promise<ImageSearchResponse | null>
   fetchBackgroundImages: (page: number, pageSize: number) => Promise<void>
   downloadImage: (
     id: string,

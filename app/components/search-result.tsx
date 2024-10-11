@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 
 import { useGettyImages } from "@/lib/getty-images/context"
 import { getHighestResolutionImage } from "@/lib/getty-images/util"
@@ -26,10 +27,11 @@ export default function ImageSearchResults() {
       {searchResults.map((image) => (
         <Card key={image.id} className="overflow-hidden">
           <CardContent className="p-0">
-            <img
-              src={getHighestResolutionImage(image.display_sizes)}
+            <Image
+              src={getHighestResolutionImage(image.display_sizes) || ""}
               alt={image.title}
               className="w-full h-48 object-cover"
+              fill={true}
             />
             <div className="p-4">
               <h2 className="text-sm font-semibold line-clamp-1">

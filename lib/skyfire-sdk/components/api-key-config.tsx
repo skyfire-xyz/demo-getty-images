@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AxiosError } from "axios"
-import { set } from "lodash"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 

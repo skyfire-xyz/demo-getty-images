@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 
 import { useGettyImages } from "@/lib/getty-images/context"
 import { getHighestResolutionImage } from "@/lib/getty-images/util"
@@ -42,8 +43,10 @@ export default function ImagesSearchWithPagination() {
   const handleSearch = async (term: string, page: number) => {
     try {
       const results = await searchImages(term, page, ITEMS_PER_PAGE)
-      setTotalResults(results.result_count)
-      setCurrentPage(page)
+      if (results) {
+        setTotalResults(results.result_count)
+        setCurrentPage(page)
+      }
     } catch (error) {
       console.error("Error performing search:", error)
     }
@@ -123,10 +126,11 @@ export default function ImagesSearchWithPagination() {
                       flexShrink: 0,
                     }}
                   >
-                    <img
-                      src={getHighestResolutionImage(image.display_sizes)}
+                    <Image
+                      src={getHighestResolutionImage(image.display_sizes) || ""}
                       alt={image.title}
                       className="w-full h-full object-cover"
+                      fill={true}
                     />
                     <CardContent className="p-4 absolute inset-0 bg-black bg-opacity-70 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between overflow-y-auto">
                       <div>

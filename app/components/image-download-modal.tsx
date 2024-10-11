@@ -17,12 +17,6 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 interface ImageDetailsModalProps {
   isOpen: boolean
@@ -77,17 +71,6 @@ export function ImageDetailsModal({
         document.body.appendChild(a)
         a.click()
         window.URL.revokeObjectURL(url)
-
-        // Add the downloaded image to the list
-        addDownloadedItem({
-          downloadResult: {
-            ...result,
-            width: selectedSizeObj.width,
-            height: selectedSizeObj.height,
-          },
-          searchResult: selectedImage,
-          isExpired: false,
-        })
 
         toast({
           title: "Download Successful",

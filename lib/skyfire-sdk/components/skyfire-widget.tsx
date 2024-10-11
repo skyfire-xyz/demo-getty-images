@@ -33,7 +33,7 @@ interface TOSObject {
 }
 
 interface SkyfireWidgetProps {
-  tos?: TOSObject
+  tos: TOSObject
 }
 
 export default function SkyfireWidget({ tos }: SkyfireWidgetProps) {
@@ -110,7 +110,11 @@ export default function SkyfireWidget({ tos }: SkyfireWidgetProps) {
       <Dialog open={isDialogOpen || !!error}>
         <DialogOverlay />
         <DialogContent className="skyfire-theme sm:max-w-[425px]">
-          <ConfigComponent error={error} tos={tos} />
+          {tos ? (
+            <APIKeyConfigWithTOS error={error} tos={tos} />
+          ) : (
+            <ApiKeyConfig error={error} />
+          )}
         </DialogContent>
       </Dialog>
       <AnimatePresence>

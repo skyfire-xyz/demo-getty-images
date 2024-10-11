@@ -36,6 +36,7 @@ export interface ImageSearchResult {
 
 export interface ImageSearchResponse {
   images: ImageSearchResult[]
+  result_count: number
 }
 
 export interface ImageDownloadResult {
