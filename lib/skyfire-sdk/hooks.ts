@@ -17,9 +17,9 @@ export function addDatasets(
   if (systemMessages.length > 0) {
     setMessages((prevMessages) => {
       const messages = prevMessages.filter(
-        (msg) => msg.role !== "system" || msg.id === "instruction"
+        (msg) => !msg.content.startsWith("<Data>") || msg.id === "instruction"
       )
-      return concatenateMessages([systemMessages, messages])
+      return concatenateMessages([messages, systemMessages])
     })
   }
 }
@@ -30,20 +30,11 @@ export function formatReponseToChatSystemData(
 ): Message[] {
   const messageId = `claim-${response.config.url}`
 
-  const originalMessageObj: Message = {
-    id: messageId,
-    role: "system",
-    content: `${
-      response.config.metadataForAgent?.title ||
-      `Response from ${response.config.url}`
-    } attached.`,
-  }
-
   const chunkedMessages: Message[] = [
     {
       id: `${messageId}-chunk-0`,
-      role: "system",
-      content: `<Chunk>This is the JSON data from the API "${
+      role: "user",
+      content: `<Data>This is the JSON data from the API "${
         response.config.metadataForAgent?.title || ""
       }" response ${
         response.config.url
@@ -53,7 +44,7 @@ export function formatReponseToChatSystemData(
     } as Message,
   ]
 
-  return [originalMessageObj, ...chunkedMessages]
+  return [...chunkedMessages]
 }
 
 export function concatenateMessages(messageGroups: Message[][]): Message[] {

@@ -52,3 +52,63 @@ export interface ImageDownloadResult {
   title: string
   uri: string
 }
+
+export interface PurchaseHistoryItem {
+  id: string
+  name: string
+  attributes: {
+    claim: {
+      id: string
+      nonce: string
+      value: string
+      status: string
+      network: string
+      currency: string
+      createdAt: string
+      signature: string
+      updatedAt: string
+      referenceId: string
+      sourceAddress: string
+      contractAddress: string
+      destinationAddress: string
+    }
+    gettyImage: {
+      id: string
+      uri: string
+      title: string
+      artist: string
+      caption: string
+      userEmail: string
+      asset_family: string
+      collection_id: number
+      display_sizes: Array<{
+        uri: string
+        name: string
+        is_watermarked: boolean
+        width?: number
+        height?: number
+      }>
+      license_model: string
+      download_sizes: Array<{
+        dpi: number
+        name: string
+        bytes: number
+        width: number
+        amount: number
+        height: number
+        media_type: string
+      }>
+      max_dimensions: {
+        width: number
+        height: number
+      }
+      collection_code: string
+      collection_name: string
+      tosConfirmation: boolean
+    }
+  }
+  userUuid: string
+  trackId: string
+  trackIdType: string
+  createdDate: string
+}

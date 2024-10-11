@@ -96,7 +96,7 @@ export default function ImagesSearchWithPagination() {
   const rows = calculateRowLayout(searchResults)
 
   return (
-    <div className="container mx-auto px-4" ref={containerRef}>
+    <div className="container" ref={containerRef}>
       {rows.map((row, rowIndex) => {
         const isLastRow = rowIndex === rows.length - 1
         const rowWidth = row.reduce((sum, image) => {

@@ -24,48 +24,49 @@ export function SearchInfo() {
   if (!searchTerm) return null
 
   return (
-    <div className="container mx-auto mb-4">
-      <Card>
-        <CardContent className="p-4 flex items-end">
-          <div>
-            <p className="text-sm mb-2">
-              Showing results for:{" "}
-              <h2 className="inline font-bold text-2xl">{searchTerm}</h2>
-            </p>
-            {/* {searchResults.length > 0 && (
-              <p className="text-sm mb-4">
-                Displaying items {startItem.toLocaleString()} -{" "}
-                {endItem.toLocaleString()} of {totalImages.toLocaleString()}{" "}
-                total results
+    <div className="fixed top-4 left-8 right-4 z-10 bg-background/80 backdrop-blur-sm shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Card className="fixed right-0 w-2/3 z-10 bg-background/80 backdrop-blur-sm shadow-md pr-4">
+          <CardContent className="p-4 w-full">
+            <div className="w-full flex justify-between items-center">
+              <p className="text-sm mb-2">
+                Showing results for:{" "}
+                <h2 className="inline font-bold text-2xl">{searchTerm}</h2>
               </p>
-            )} */}
-            <div>
-              {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2">
-                  <Button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1 || searchLoading}
-                    size="sm"
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-sm">
-                    Page {currentPage.toLocaleString()} of{" "}
-                    {totalPages.toLocaleString()}
-                  </span>
-                  <Button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages || searchLoading}
-                    size="sm"
-                  >
-                    Next
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-between items-center">
+                <p className="text-sm">
+                  {totalImages > 0 &&
+                    `${totalImages.toLocaleString()} total results`}
+                </p>
+                {totalPages > 1 && (
+                  <div className="ml-4 flex justify-center items-center space-x-2">
+                    <Button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1 || searchLoading}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Previous
+                    </Button>
+                    <span className="text-sm">
+                      Page {currentPage.toLocaleString()} of{" "}
+                      {totalPages.toLocaleString()}
+                    </span>
+                    <Button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages || searchLoading}
+                      size="sm"
+                      variant="outline"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

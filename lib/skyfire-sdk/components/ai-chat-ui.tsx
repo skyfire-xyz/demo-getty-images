@@ -126,7 +126,7 @@ export default function Component({
               </Avatar>
               <div className="mx-2 p-3 rounded-lg bg-muted max-w-[calc(100%-50px)]">
                 <p className="mb-2">
-                  Welcome to the Pricing Culture AI Agent. What can I do for you
+                  Welcome to the Getty Images AI Agent. What can I do for you
                   {responses.length > 0 ? ` or select an option below` : ""}?
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -150,8 +150,8 @@ export default function Component({
           {messages
             .filter((message) => {
               if (
-                message.role === "system" &&
-                message.content.startsWith("<Chunk>")
+                message.role === "user" &&
+                message.content.startsWith("<Data>")
               )
                 return false
               return true

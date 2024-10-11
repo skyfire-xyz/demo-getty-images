@@ -22,8 +22,8 @@ export function formatReponseToChatSystemData(
   const chunkedMessages: Message[] = [
     {
       id: `${messageId}-chunk-0`,
-      role: "system",
-      content: `<Chunk>This is the JSON data from the API response ${
+      role: "user",
+      content: `<Data>This is the JSON data from the API response ${
         response.config.url
       }. Please answer my questions based on this data. ${JSON.stringify(
         response.data

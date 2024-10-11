@@ -47,9 +47,11 @@ export default function AIChatUI({
   const formRef = useRef<HTMLFormElement>(null)
 
   const quickPrompts = useMemo(() => {
-    return responses.reduce((arr: string[], res: AxiosResponse) => {
-      return [...arr, ...(res.config.metadataForAgent?.customPrompts || [])]
-    }, [])
+    return new Set<string>(
+      responses.reduce((arr: string[], res: AxiosResponse) => {
+        return [...arr, ...(res.config.metadataForAgent?.customPrompts || [])]
+      }, [])
+    )
   }, [responses])
 
   const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -111,9 +113,6 @@ export default function AIChatUI({
       className="w-full mx-auto flex flex-col h-[calc(100vh-116px)]"
       ref={cardRef}
     >
-      <CardHeader className="flex-shrink-0">
-        <CardTitle>AI Agent</CardTitle>
-      </CardHeader>
       <CardContent className="flex-grow overflow-hidden p-0 relative">
         <div
           ref={chatContainerRef}
@@ -129,29 +128,14 @@ export default function AIChatUI({
                 <p className="mb-2">
                   Welcome to the Getty Images AI Agent. what can I do for you?
                 </p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {responses.map((response) => {
-                    const url = response.config.url
-                    if (!url) return null
-                    return (
-                      <Badge
-                        key={response.config.url}
-                        variant="default"
-                        className="cursor-pointer"
-                      >
-                        {getItemNamesFromResponse(response)}
-                      </Badge>
-                    )
-                  })}
-                </div>
               </div>
             </div>
           </div>
           {messages
             .filter((message) => {
               if (
-                (message.role === "system" &&
-                  message.content.startsWith("<Chunk>")) ||
+                (message.role === "user" &&
+                  message.content.startsWith("<Data>")) ||
                 message.id === "instruction"
               )
                 return false
@@ -240,7 +224,7 @@ export default function AIChatUI({
       <CardFooter className="p-4 flex-shrink-0">
         <div className="w-full space-y-4">
           <div className="flex flex-wrap gap-2">
-            {quickPrompts.map((prompt, index) => (
+            {[...quickPrompts].map((prompt, index) => (
               <Button
                 key={index}
                 variant="outline"

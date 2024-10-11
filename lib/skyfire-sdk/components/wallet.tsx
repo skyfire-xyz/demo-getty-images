@@ -38,6 +38,7 @@ export function WalletInterface({
         <Tabs defaultValue="wallet-info" className="h-full">
           <TabsList className="">
             <TabsTrigger value="wallet-info">Wallet Details</TabsTrigger>
+            <TabsTrigger value="claims">Claims</TabsTrigger>
             <TabsTrigger value="chat">Chat</TabsTrigger>
           </TabsList>
           <TabsContent
@@ -45,6 +46,11 @@ export function WalletInterface({
             className="h-[calc(100%-50px)] flex flex-col gap-6 data-[state=inactive]:hidden"
           >
             <WalletDetailsPanel wallet={wallet} balance={balance} />
+          </TabsContent>
+          <TabsContent
+            value="claims"
+            className="h-[calc(100%-50px)] flex flex-col gap-6 data-[state=inactive]:hidden"
+          >
             <ClaimsWidget claims={claims || []} />
           </TabsContent>
           <TabsContent

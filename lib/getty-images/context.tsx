@@ -2,11 +2,15 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 
-import { useSkyfireAPIClient } from "../skyfire-sdk/context/context"
+import {
+  useSkyfireAPIClient,
+  useSkyfireTOSAgreement,
+} from "../skyfire-sdk/context/context"
 import {
   ImageDownloadResult,
   ImageSearchResponse,
   ImageSearchResult,
+  PurchaseHistoryItem,
 } from "./type"
 
 interface DownloadedItem {
@@ -22,6 +26,7 @@ interface GettyImagesContextType {
   searchLoading: boolean
   error: string | null
   downloadedItems: DownloadedItem[]
+  purchaseHistory: PurchaseHistoryItem[]
   searchTerm: string
   totalImages: number
   currentPage: number
@@ -42,23 +47,32 @@ interface GettyImagesContextType {
   markDownloadAsExpired: (id: string) => void
   updateDownloadedItem: (item: DownloadedItem) => void
   removeDownloadedItem: (id: string) => void
+  fetchPurchaseHistory: () => Promise<void>
 }
 
 const GettyImagesContext = createContext<GettyImagesContextType | undefined>(
   undefined
 )
 
+const GETTY_IMAGES_DESTINATION_ADDRESS =
+  "0xbb20BafE0ddf663ad08DA6DB5d3bBeF7a28944AA"
+
 export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const client = useSkyfireAPIClient()
+  const tosConfirmation = useSkyfireTOSAgreement()
   const [searchResults, setSearchResults] = useState<ImageSearchResult[]>([])
   const [backgroundImages, setBackgroundImages] = useState<ImageSearchResult[]>(
     []
   )
   const [downloadedItems, setDownloadedItems] = useState<DownloadedItem[]>([])
+  const [purchaseHistory, setPurchaseHistory] = useState<PurchaseHistoryItem[]>(
+    []
+  )
   const [loading, setLoading] = useState(false)
   const [searchLoading, setSearchLoading] = useState(false)
+  const [historyLoading, setHistoryLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [totalImages, setTotalImages] = useState(0)
@@ -76,8 +90,11 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     phrase: string,
     page: number,
     pageSize: number
-  ): Promise<ImageSearchResponse> => {
+  ): Promise<ImageSearchResponse | null> => {
     if (!client) throw new Error("API client not available")
+
+    if (searchLoading) return Promise.resolve(null)
+
     setSearchLoading(true)
     setError(null)
     try {
@@ -113,13 +130,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true)
     setError(null)
     try {
-      const randomTerms = [
-        "nature",
-        "technology",
-        "abstract",
-        "business",
-        "travel",
-      ]
+      const randomTerms = ["nature", "human", "space", "love", "baby"]
       const randomTerm =
         randomTerms[Math.floor(Math.random() * randomTerms.length)]
       const response = await client.get<ImageSearchResponse>(
@@ -142,8 +153,15 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true)
     setError(null)
     try {
-      const response = await client.get<ImageDownloadResult>(
-        `v1/receivers/getty-images/images/download?id=${id}&height=${height}&size=${size}`,
+      const response = await client.post<ImageDownloadResult>(
+        "v1/receivers/getty-images/images/download",
+        {
+          id,
+          height: `${height}px`,
+          size,
+          tosConfirmation: tosConfirmation.tosAgreed,
+          userEmail: "koji@skyfire.xyz",
+        },
         {
           metadataForAgent: {
             title: `Getty Image Download: ${id}`,
@@ -199,6 +217,30 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     )
   }
 
+  const fetchPurchaseHistory = async () => {
+    if (!client || historyLoading) return
+    setHistoryLoading(true)
+    setError(null)
+    try {
+      const response = await client.get<PurchaseHistoryItem[]>(
+        `/v1/events?eventNames=Claim&trackIds=${GETTY_IMAGES_DESTINATION_ADDRESS}`,
+        {
+          metadataForAgent: {
+            title: "Getty Images Purchase History",
+            useWithChat: true,
+            correspondingPageURLs: ["/"],
+            customPrompts: ["Tell me about my purchase history"],
+          },
+        }
+      )
+      setPurchaseHistory(response.data)
+      setHistoryLoading(false)
+    } catch (err) {
+      setError("Failed to fetch purchase history")
+      setHistoryLoading(false)
+    }
+  }
+
   return (
     <GettyImagesContext.Provider
       value={{
@@ -208,6 +250,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         searchLoading,
         error,
         downloadedItems,
+        purchaseHistory,
         searchTerm,
         totalImages,
         currentPage,
@@ -220,6 +263,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         markDownloadAsExpired,
         updateDownloadedItem,
         removeDownloadedItem,
+        fetchPurchaseHistory,
       }}
     >
       {children}
