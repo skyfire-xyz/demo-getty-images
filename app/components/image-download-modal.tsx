@@ -162,18 +162,14 @@ export function ImageDetailsModal({
                           {(size.bytes / 1024 / 1024).toFixed(2)} MB
                         </Badge>
                         <Badge variant="outline">
-                          $
-                          {calculateEstimatedPrice(
-                            size.width,
-                            size.height
-                          ).toFixed(2)}
+                          ${Number(size.amount / 1000000).toFixed(3)}
                         </Badge>
                       </div>
                     </div>
                   )
                 )}
               </RadioGroup>
-              <p className="mt-4 flex">
+              {/* <p className="mt-4 flex">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -186,7 +182,7 @@ export function ImageDetailsModal({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
