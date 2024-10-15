@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useChat } from "ai/react"
 
 import { useGettyImages } from "@/lib/getty-images/context"
+import { clearResponses } from "@/lib/skyfire-sdk/context/action"
 import { useSkyfireAPIKey } from "@/lib/skyfire-sdk/context/context"
 
 import AIChatUI from "./components/ai-chat/ai-chat-ui"
@@ -15,7 +16,12 @@ import { TwoPanelLayout } from "./components/two-panel-layout"
 
 export default function IndexPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const { searchImages, searchTerm, setSearchTerm } = useGettyImages()
+  const {
+    clearSearchAndPurchaseHistory,
+    searchImages,
+    searchTerm,
+    setSearchTerm,
+  } = useGettyImages()
   const [showHistory, setShowHistory] = useState(false)
   const { localAPIKey } = useSkyfireAPIKey()
 
@@ -59,16 +65,11 @@ When you need to search for images, use the following format in your response:
 "I'll search for images of [description]. Here's what I found:"
 Replace [description] with what you're searching for. For example:
 "I'll search for images of a sunset over the mountains. Here's what I found:"
-
 When the user asks to see their purchase history, use the following format:
 "I'll show your purchase history. Here's what I found:"
-
 Please note that you cannot display images or purchase history directly here, but they will be shown in another panel, so you don't need to worry about that.
-
 After providing the image search or purchase history statement, insert a few empty lines without using HTML br tag before summarizing the results or providing additional information.
-
 IMPORTANT: When responding to queries about purchase history or images, only use the information provided by these specific prompts. Do not make up or invent any information about purchase history or image search results. If you don't have the necessary information to respond, simply use the appropriate prompt without adding any extra details.
-
 For all other queries unrelated to purchase history or image searches, you may respond normally based on your general knowledge and capabilities.
 `,
       },
@@ -83,6 +84,16 @@ For all other queries unrelated to purchase history or image searches, you may r
       setErrorMessage(error.message || "An error occurred during the chat.")
     },
   })
+
+  useEffect(() => {
+    if (!localAPIKey) {
+      aiChatProps.setMessages([
+        ...aiChatProps.messages.filter((msg) => msg.id === "instruction"),
+      ])
+      clearSearchAndPurchaseHistory()
+      clearResponses()
+    }
+  }, [localAPIKey])
 
   const leftPanel = (
     <AIChatUI aiChatProps={aiChatProps} errorMessage={errorMessage} />

@@ -48,6 +48,7 @@ interface GettyImagesContextType {
   updateDownloadedItem: (item: DownloadedItem) => void
   removeDownloadedItem: (id: string) => void
   fetchPurchaseHistory: () => Promise<void>
+  clearSearchAndPurchaseHistory: () => void
 }
 
 const GettyImagesContext = createContext<GettyImagesContextType | undefined>(
@@ -241,6 +242,17 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
+  const clearSearchAndPurchaseHistory = () => {
+    setSearchResults([])
+    setBackgroundImages([])
+    setPurchaseHistory([])
+    setSearchTerm("")
+    setTotalImages(0)
+    setCurrentPage(1)
+    setTotalPages(0)
+    setError(null)
+  }
+
   return (
     <GettyImagesContext.Provider
       value={{
@@ -264,6 +276,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         updateDownloadedItem,
         removeDownloadedItem,
         fetchPurchaseHistory,
+        clearSearchAndPurchaseHistory,
       }}
     >
       {children}

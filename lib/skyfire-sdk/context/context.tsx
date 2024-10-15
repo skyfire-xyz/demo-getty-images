@@ -120,6 +120,7 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
         dispatch(loading(false))
         if (error.response && error.response.status === 401) {
           // Handle unauthorized access
+          logout()
         }
         return Promise.reject(error)
       }

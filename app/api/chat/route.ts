@@ -21,7 +21,7 @@ export async function POST(request: Request) {
         "skyfire-api-key": apiKey,
       },
       body: JSON.stringify({
-        model: "google/gemini-flash-1.5-8b",
+        model: "openai/chatgpt-4o-latest",
         messages: convertToCoreMessages(messages),
         stream: true,
       }),
