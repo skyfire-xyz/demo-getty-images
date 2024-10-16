@@ -21,14 +21,17 @@ interface TwoPanelLayoutProps {
   leftPanel: React.ReactNode
   rightPanel: React.ReactNode
   header: React.ReactNode
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
 }
 
 export default function TwoPanelLayout({
   leftPanel,
   rightPanel,
   header,
+  isOpen,
+  setIsOpen,
 }: TwoPanelLayoutProps) {
-  const [isOpen, setIsOpen] = React.useState(true)
   const { searchTerm, purchaseHistory, searchLoading } = useGettyImages()
 
   React.useEffect(() => {
