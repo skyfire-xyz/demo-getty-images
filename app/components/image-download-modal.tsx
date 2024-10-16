@@ -111,7 +111,14 @@ export default function ImageDetailsModal({
                   </li>
                   <li>
                     <strong>License Model:</strong>{" "}
-                    {selectedImage?.license_model}
+                    <a
+                      className="text-blue-600 underline"
+                      rel="noreferrer"
+                      href="https://www.gettyimages.ca/eula#RF"
+                      target="_blank"
+                    >
+                      {selectedImage?.license_model}
+                    </a>
                   </li>
                 </ul>
               </div>
