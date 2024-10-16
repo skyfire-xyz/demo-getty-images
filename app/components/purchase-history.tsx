@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Clock, Download, Image, Trash2 } from "lucide-react"
+import { Clock, Download, FileText, Image, Trash2 } from "lucide-react"
 import { toast } from "react-toastify"
 
 import { useGettyImages } from "@/lib/getty-images/context"
@@ -124,6 +124,18 @@ export function PurchaseHistory() {
                 <div className="flex items-center space-x-2 text-sm">
                   <Image className="h-4 w-4" />
                   <span>{item.attributes.gettyImage.artist}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm">
+                  <FileText className="h-4 w-4 mr-2" />
+                  License:
+                  <a
+                    className="text-blue-600 underline"
+                    rel="noreferrer"
+                    href="https://www.gettyimages.ca/eula#RF"
+                    target="_blank"
+                  >
+                    {item.attributes.gettyImage?.license_model}
+                  </a>
                 </div>
                 <div className="flex items-center space-x-2 text-sm">
                   <Clock className="h-4 w-4" />
