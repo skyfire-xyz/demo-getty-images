@@ -25,7 +25,7 @@ interface ImageDetailsModalProps {
   selectedImage: any // Replace with your actual image type
 }
 
-export function ImageDetailsModal({
+export default function ImageDetailsModal({
   isOpen,
   onClose,
   selectedImage,
@@ -152,17 +152,25 @@ export function ImageDetailsModal({
             </div>
           </div>
         </ScrollArea>
-        <div className="flex justify-between p-6 border-t">
-          <Button onClick={onClose} variant="outline">
-            Close
-          </Button>
-          <Button
-            onClick={handleDownload}
-            disabled={downloadLoading || !selectedSize}
-          >
-            {downloadLoading ? "Downloading..." : "Purchase & Download"}
-            <Download className="ml-2 h-4 w-4" />
-          </Button>
+        <div className="flex flex-col space-y-4 p-6 border-t">
+          <p className="text-sm text-muted-foreground flex items-center">
+            <Info className="h-4 w-4 mr-2" />
+            After purchase, the download link will be visible in your purchase
+            history. <br />
+            The link will expire in 24 hours.
+          </p>
+          <div className="flex justify-end space-x-2">
+            <Button onClick={onClose} variant="outline">
+              Close
+            </Button>
+            <Button
+              onClick={handleDownload}
+              disabled={downloadLoading || !selectedSize}
+            >
+              {downloadLoading ? "Downloading..." : "Purchase & Download"}
+              <Download className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -8,7 +8,7 @@ import { getHighestResolutionImage } from "@/lib/getty-images/util"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
-import { ImageDetailsModal } from "./image-download-modal"
+import ImageDetailsModal from "./image-download-modal"
 
 export const ITEMS_PER_PAGE = 30
 const IMAGE_HEIGHT = 250 // Fixed height for all images
