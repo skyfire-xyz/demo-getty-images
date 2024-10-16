@@ -29,7 +29,7 @@ export function WalletInterface({
   const { wallet, balance, claims } = useSkyfireState()
 
   return (
-    <Card className="skyfire-theme max-w-full h-[calc(100vh-200px)] flex flex-col">
+    <Card className="skyfire-theme md:max-w-full h-[calc(100vh-200px)] flex flex-col">
       <CardHeader>
         <CardTitle>{usdAmount(balance?.escrow.available || "0")}</CardTitle>
         <CardDescription>{wallet?.walletAddress}</CardDescription>

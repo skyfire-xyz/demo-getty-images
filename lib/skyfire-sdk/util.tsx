@@ -66,3 +66,12 @@ export function usdAmount(usdc: number | string) {
   const usdAmount = Number(usdc) / 1000000
   return "$" + usdAmount.toFixed(7) + " USD"
 }
+
+export function truncateEthAddress(address: string) {
+  if (!address || address.length < 10) {
+    return address
+  }
+  const start = address.slice(0, 4)
+  const end = address.slice(-4)
+  return `${start}...${end}`
+}
