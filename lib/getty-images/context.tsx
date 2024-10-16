@@ -56,6 +56,7 @@ const GettyImagesContext = createContext<GettyImagesContextType | undefined>(
 )
 
 const GETTY_IMAGES_DESTINATION_ADDRESS =
+  process.env.NEXT_PUBLIC_GETTY_IMAGES_DESTINATION_ADDRESS ||
   "0xbb20BafE0ddf663ad08DA6DB5d3bBeF7a28944AA"
 
 export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
