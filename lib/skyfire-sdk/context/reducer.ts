@@ -64,14 +64,23 @@ export const skyfireReducer = (
       }
       return state
     case ActionType.REPLACE_RESPONSE:
-      return {
-        ...state,
-        responses: state.responses.map((resp) =>
+      const existingResponseIndex = state.responses.findIndex(
+        (resp) =>
           resp.config.metadataForAgent?.title ===
           action.payload.config.metadataForAgent?.title
-            ? action.payload
-            : resp
-        ),
+      )
+      if (existingResponseIndex !== -1) {
+        return {
+          ...state,
+          responses: state.responses.map((resp, index) =>
+            index === existingResponseIndex ? action.payload : resp
+          ),
+        }
+      } else {
+        return {
+          ...state,
+          responses: [...state.responses, action.payload],
+        }
       }
     case ActionType.CLEAR_RESPONSES:
       return {

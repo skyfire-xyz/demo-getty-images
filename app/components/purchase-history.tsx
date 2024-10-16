@@ -2,19 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { Clock, Download, Image, Trash2 } from "lucide-react"
+import { toast } from "react-toastify"
 
 import { useGettyImages } from "@/lib/getty-images/context"
 import { useSkyfireAPIClient } from "@/lib/skyfire-sdk/context/context"
-import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 export function PurchaseHistory() {
   const { purchaseHistory, fetchPurchaseHistory, loading, error } =
@@ -22,6 +16,7 @@ export function PurchaseHistory() {
   const client = useSkyfireAPIClient()
   const [isLoading, setIsLoading] = useState(true)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const [expiredLinks, setExpiredLinks] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const loadPurchaseHistory = async () => {
@@ -49,18 +44,18 @@ export function PurchaseHistory() {
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
-      toast({
-        title: "Download Successful",
-        description: "The image has been downloaded successfully.",
-      })
+      toast.success("The image has been downloaded successfully.")
     } catch (error) {
       console.error("Download failed:", error)
-      toast({
-        title: "Download Failed",
-        description:
-          "The download link has expired. Please try re-purchasing the image.",
-        variant: "destructive",
-      })
+      setExpiredLinks((prev) => new Set(prev).add(item.id))
+      toast.error(() => (
+        <>
+          <b>Download Failed</b>
+          <p>
+            The download link has expired. Please try re-purchasing the image.
+          </p>
+        </>
+      ))
     } finally {
       setDownloadingId(null)
     }
@@ -144,17 +139,25 @@ export function PurchaseHistory() {
                 </div>
                 <div className="flex justify-between items-center mt-4">
                   <Button
-                    variant="outline"
+                    variant={
+                      expiredLinks.has(item.id) ? "destructive" : "outline"
+                    }
                     size="sm"
                     onClick={() => handleDownload(item)}
-                    disabled={downloadingId === item.id}
+                    disabled={
+                      downloadingId === item.id || expiredLinks.has(item.id)
+                    }
                   >
                     {downloadingId === item.id ? (
                       <Download className="mr-2 h-4 w-4 animate-spin" />
+                    ) : expiredLinks.has(item.id) ? (
+                      <Trash2 className="mr-2 h-4 w-4" />
                     ) : (
                       <Download className="mr-2 h-4 w-4" />
                     )}
-                    Download
+                    {expiredLinks.has(item.id)
+                      ? "Download Link Expired"
+                      : "Download"}
                   </Button>
                 </div>
               </div>

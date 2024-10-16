@@ -103,7 +103,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         `v1/receivers/getty-images/search/images/creative?phrase=${phrase}&page=${page}&page_size=${pageSize}`,
         {
           metadataForAgent: {
-            title: `Getty Images Search: ${phrase}`,
+            title: `Getty Images Search`,
             useWithChat: true,
             correspondingPageURLs: ["/"],
             customPrompts: [
