@@ -24,9 +24,9 @@ export function SearchInfo() {
   if (!searchTerm) return null
 
   return (
-    <div className="fixed top-4 left-8 right-4 z-10 bg-background/80 backdrop-blur-sm shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card className="fixed right-0 w-2/3 z-10 bg-background/80 backdrop-blur-sm shadow-md pr-4">
+    <div className="md:fixed top-4 left-8 right-4 z-10 bg-background/80 backdrop-blur-sm shadow-md">
+      <div className="md:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Card className="md:fixed right-0 md:w-2/3 z-10 bg-background/80 backdrop-blur-sm shadow-md pr-4">
           <CardContent className="p-4 w-full">
             <div className="w-full flex justify-between items-center">
               <p className="text-sm mb-2">
@@ -34,7 +34,7 @@ export function SearchInfo() {
                 <h2 className="inline font-bold text-2xl">{searchTerm}</h2>
               </p>
               <div className="flex justify-between items-center">
-                <p className="text-sm">
+                <p className="text-sm invisible md:block">
                   {totalImages > 0 &&
                     `${totalImages.toLocaleString()} total results`}
                 </p>

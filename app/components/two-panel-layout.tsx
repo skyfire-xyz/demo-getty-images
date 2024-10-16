@@ -76,7 +76,7 @@ export function TwoPanelLayout({ leftPanel, rightPanel }: TwoPanelLayoutProps) {
         <div className="mt-4">{leftPanel}</div>
       </div>
       <div
-        className="w-1 bg-gray-600 cursor-col-resize hover:bg-gray-300 transition-colors"
+        className="w-1 bg-gray-00 cursor-col-resize hover:bg-gray-300 transition-colors"
         onMouseDown={handleMouseDown}
       />
       <div

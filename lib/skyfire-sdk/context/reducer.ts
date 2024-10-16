@@ -63,6 +63,16 @@ export const skyfireReducer = (
         }
       }
       return state
+    case ActionType.REPLACE_RESPONSE:
+      return {
+        ...state,
+        responses: state.responses.map((resp) =>
+          resp.config.metadataForAgent?.title ===
+          action.payload.config.metadataForAgent?.title
+            ? action.payload
+            : resp
+        ),
+      }
     case ActionType.CLEAR_RESPONSES:
       return {
         ...state,

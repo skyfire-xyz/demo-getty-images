@@ -6,18 +6,19 @@ import Image from "next/image"
 import { useGettyImages } from "@/lib/getty-images/context"
 import { getHighestResolutionImage } from "@/lib/getty-images/util"
 import { useSkyfireAPIClient } from "@/lib/skyfire-sdk/context/context"
+import { useIsMobile } from "@/hooks/use-is-mobile"
 import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-
-const ITEMS_PER_ROW = 8
-const ROW_HEIGHT = 250 // Fixed height for all rows
-const NUM_ROWS = 4
 
 export function AnimatedAspectRatioImageGallery() {
   const client = useSkyfireAPIClient()
   const { backgroundImages, loading, fetchBackgroundImages } = useGettyImages()
   const [containerWidth, setContainerWidth] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile(768)
+
+  const ITEMS_PER_ROW = 8
+  const ROW_HEIGHT = isMobile ? 150 : 250
+  const NUM_ROWS = isMobile ? 3 : 4
 
   useEffect(() => {
     fetchBackgroundImages(1, ITEMS_PER_ROW * NUM_ROWS)
@@ -115,7 +116,11 @@ export function AnimatedAspectRatioImageGallery() {
       )}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="text-left px-8 py-8 rounded-lg max-w-xl">
-          <h1 className="text-8xl font-bold leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-400">
+          <h1
+            className={`${
+              isMobile ? "text-6xl" : "text-8xl"
+            } font-bold leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-400`}
+          >
             <span>Discover</span>
             <br />
             <span>Unrivaled</span>

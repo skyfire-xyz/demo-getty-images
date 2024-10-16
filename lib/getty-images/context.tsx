@@ -110,6 +110,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
               "Can you describe the images?",
               "What are the most common themes in these images?",
             ],
+            replaceExisting: true,
           },
         }
       )
@@ -118,6 +119,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentPage(page)
       setTotalPages(Math.ceil(response.data.result_count / pageSize))
       setSearchLoading(false)
+      setSearchTerm(phrase)
       return response.data
     } catch (err) {
       setError("Failed to fetch images")

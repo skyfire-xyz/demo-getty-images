@@ -15,6 +15,7 @@ import {
   addResponse,
   clearResponses,
   loading,
+  replaceResponse,
   updateError,
   updateSkyfireAPIKey,
   updateSkyfireClaims,
@@ -39,6 +40,7 @@ declare module "axios" {
       correspondingPageURLs: string[]
       customizeResponse?: (response: AxiosResponse) => AxiosResponse
       customPrompts: string[]
+      replaceExisting?: boolean
     }
   }
 }
@@ -48,6 +50,7 @@ interface SkyfireContextType {
   apiClient: AxiosInstance | null
   logout: () => void
   pushResponse: (response: AxiosResponse) => void
+  replaceExistingResponse: (response: AxiosResponse) => void
   resetResponses: () => void
   getClaimByReferenceID: (referenceId: string | null) => Promise<boolean>
 }
@@ -90,11 +93,21 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
       async (response) => {
         if (response.config.metadataForAgent?.useWithChat) {
           if (response.config.metadataForAgent?.customizeResponse) {
-            pushResponse(
-              response.config.metadataForAgent?.customizeResponse(response)
-            )
+            if (response.config.metadataForAgent?.replaceExisting) {
+              replaceExistingResponse(
+                response.config.metadataForAgent?.customizeResponse(response)
+              )
+            } else {
+              pushResponse(
+                response.config.metadataForAgent?.customizeResponse(response)
+              )
+            }
           } else {
-            pushResponse(response)
+            if (response.config.metadataForAgent?.replaceExisting) {
+              replaceExistingResponse(response)
+            } else {
+              pushResponse(response)
+            }
           }
         }
 
@@ -195,6 +208,10 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
     dispatch(addResponse(response))
   }
 
+  function replaceExistingResponse(response: AxiosResponse) {
+    dispatch(replaceResponse(response))
+  }
+
   function resetResponses() {
     dispatch(clearResponses())
   }
@@ -214,6 +231,7 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
         apiClient,
         logout,
         pushResponse,
+        replaceExistingResponse,
         resetResponses,
         getClaimByReferenceID,
       }}
