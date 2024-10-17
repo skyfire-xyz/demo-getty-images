@@ -1,5 +1,6 @@
-import React from "react"
+import React, { use } from "react"
 
+import { useIsMobile } from "@/hooks/use-is-mobile"
 import {
   Card,
   CardContent,
@@ -9,7 +10,7 @@ import {
 } from "@/components/ui/card"
 
 import { useSkyfire } from "../context/context"
-import { usdAmount } from "../util"
+import { truncateEthAddress, usdAmount } from "../util"
 import LogoutButton from "./logout"
 
 interface WalletDetailsPanelProps {
@@ -36,6 +37,7 @@ export function WalletDetailsPanel({
   balance,
 }: WalletDetailsPanelProps) {
   const { dispatch, logout } = useSkyfire()
+  const isMobile = useIsMobile()
 
   return (
     <Card className="w-full">
@@ -49,7 +51,9 @@ export function WalletDetailsPanel({
           </p>
           <p>
             <strong className="font-medium">Address:</strong>{" "}
-            {wallet?.walletAddress}
+            {isMobile
+              ? truncateEthAddress(wallet?.walletAddress || "")
+              : wallet?.walletAddress}
           </p>
           <p>
             <strong className="font-medium">Network:</strong> {wallet?.network}

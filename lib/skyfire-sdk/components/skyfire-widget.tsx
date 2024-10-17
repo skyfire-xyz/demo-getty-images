@@ -117,54 +117,39 @@ export default function SkyfireWidget({ tos }: SkyfireWidgetProps) {
           )}
         </DialogContent>
       </Dialog>
-      <AnimatePresence>
-        {showWidget && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <motion.div
-                initial={
-                  localAPIKey && (!tos || tosAgreed) ? "visible" : "hidden"
-                }
-                animate="visible"
-                exit="hidden"
-                variants={minimizedVariants}
-                style={{
-                  position: "fixed",
-                  backgroundColor: "hsl(var(--primary))",
-                  zIndex: 9900,
-                  overflow: "hidden",
-                  cursor: "pointer",
-                }}
-                className="rounded-full p-0 md:p-2 flex items-center"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="flex items-center space-x-2 p-4">
-                  <LoadingImageWidget
-                    src="https://imagedelivery.net/WemO4_3zZlyNq-8IGpxrAQ/9b7b7f1c-a4b7-4777-c7ff-c92b50865600/public"
-                    alt="Company Logo"
-                    size={50}
-                    loading={!!loading}
-                  />
-                  <span className="text-primary-foreground text-xl font-semibold">
-                    {usdAmount(balance?.escrow.available || "0")}
-                  </span>
-                </div>
-              </motion.div>
-            </PopoverTrigger>
-            <PopoverContent
-              className="max-w-[800px] w-[800px] bg-transparent border-none p-0"
-              align="end"
-              side="top"
+      {showWidget && (
+        <Popover>
+          <PopoverTrigger asChild>
+            <div
+              className={`${
+                localAPIKey && (!tos || tosAgreed) ? "visible" : "hidden"
+              } rounded-full p-0 md:p-2 flex items-center fixed bg-[hsl(var(--primary))] z-[40] overflow-hidden cursor-pointer right-[10px] bottom-[10px] md:right-[20px] md:bottom-[20px]`}
             >
-              <WalletInterface
-                aiChatProps={aiChatProps}
-                errorMessage={errorMessage}
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-      </AnimatePresence>
+              <div className="flex items-center space-x-2 md:p-2 p-0">
+                <LoadingImageWidget
+                  src="https://imagedelivery.net/WemO4_3zZlyNq-8IGpxrAQ/9b7b7f1c-a4b7-4777-c7ff-c92b50865600/public"
+                  alt="Company Logo"
+                  size={50}
+                  loading={!!loading}
+                />
+                <span className="hidden md:inline text-primary-foreground text-xl font-semibold">
+                  {usdAmount(balance?.escrow.available || "0")}
+                </span>
+              </div>
+            </div>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-full md:max-w-[800px] md:w-[800px] bg-transparent border-none p-0"
+            align="end"
+            side="top"
+          >
+            <WalletInterface
+              aiChatProps={aiChatProps}
+              errorMessage={errorMessage}
+            />
+          </PopoverContent>
+        </Popover>
+      )}
       <Toaster />
     </div>
   )
