@@ -211,7 +211,7 @@ export class SkyfireProvider implements LanguageModelV1 {
     // }
 
     const response = await fetch(
-      `${SKYFIRE_ENDPOINT_URL}/proxy/openrouter/v1/chat/completions`,
+      `${SKYFIRE_ENDPOINT_URL}/proxy/openai/v1/chat/completions`,
       {
         method: "POST",
         headers: {
@@ -221,12 +221,13 @@ export class SkyfireProvider implements LanguageModelV1 {
         body: JSON.stringify({
           model: this.modelId,
           messages: options.prompt,
-          stream: stream,
+          // stream: stream,
         }),
       }
     )
 
     if (!response.ok) {
+      console.log(response, "resp;onse")
       if (response.status === 402) {
         throw new AISDKError({
           name: "InsufficientFundsError",

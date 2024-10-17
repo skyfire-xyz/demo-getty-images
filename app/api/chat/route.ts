@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-import { LanguageModelV1FunctionTool } from "@ai-sdk/provider"
-import { convertToCoreMessages, streamText, tool } from "ai"
+import { streamText, tool } from "ai"
+import { z } from "zod"
 
 import { SKYFIRE_ENDPOINT_URL } from "@/lib/skyfire-sdk/env"
 
-import { SkyfireProvider } from "./skyfire-provider"
+import { createSkyfireOpenAI } from "./skyfire-openai-provider"
 
 export const maxDuration = 30
 
@@ -23,15 +23,14 @@ export async function POST(req: Request) {
     )
   }
 
-  const skyfireProvider = new SkyfireProvider(
-    "openai/chatgpt-4o-latest",
-    apiKey
-  )
+  const skyfireWithOpenAI = createSkyfireOpenAI({
+    apiKey: apiKey,
+  })
 
   try {
     const result = await streamText({
-      model: skyfireProvider,
-      messages: convertToCoreMessages(messages),
+      model: skyfireWithOpenAI("gpt-4o"),
+      messages: messages,
     })
 
     // Return the streaming response
