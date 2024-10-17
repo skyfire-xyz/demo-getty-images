@@ -11,7 +11,7 @@ When the user asks to see their purchase history, use the following format:
 "I'll show your purchase history. Here's what I found:"
 
 When the user asks about one or more specific images (Not for searching images), first provide your opinion or analysis, then use the following markdown at the end of your response to display image(s) with low resolution without saying that you are showing images:
-Make sure to get the right image URL from the JSON data that you have (often it's missing the last character in the URL which is =), image URL shouldn't include %,  use preview display image URL from display_sizes[index].uri.
+Make sure to get the right image URL from the JSON data that you have (especially don't miss the last character in the uri which is = ), use preview display image URL from display_sizes[index].uri.
 
 ![Alt text](https://images.url.abcde/example/image.svg)
 
