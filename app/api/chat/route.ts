@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server"
-import { convertToCoreMessages, streamText } from "ai"
+import { LanguageModelV1FunctionTool } from "@ai-sdk/provider"
+import { convertToCoreMessages, streamText, tool } from "ai"
 
 import { SKYFIRE_ENDPOINT_URL } from "@/lib/skyfire-sdk/env"
 
 import { SkyfireProvider } from "./skyfire-provider"
 
-// import { CustomProvider } from "./custom-provider"
-
-// Allow streaming responses up to 30 seconds
 export const maxDuration = 30
 
 export async function POST(req: Request) {

@@ -3,12 +3,11 @@ import {
   LanguageModelV1,
   LanguageModelV1CallOptions,
   LanguageModelV1FinishReason,
+  LanguageModelV1FunctionToolCall,
   LanguageModelV1StreamPart,
 } from "@ai-sdk/provider"
 
-// Assuming you have this constant defined somewhere in your project
-const SKYFIRE_ENDPOINT_URL =
-  process.env.NEXT_PUBLIC_SKYFIRE_API_URL || "https://api.skyfire.xyz"
+import { SKYFIRE_ENDPOINT_URL } from "@/lib/skyfire-sdk/env"
 
 export class SkyfireProvider implements LanguageModelV1 {
   readonly specificationVersion = "v1" as const
@@ -60,6 +59,9 @@ export class SkyfireProvider implements LanguageModelV1 {
         let usage:
           | { promptTokens: number; completionTokens: number }
           | undefined
+        let currentFunctionCall:
+          | Partial<LanguageModelV1FunctionToolCall>
+          | undefined
 
         try {
           while (true) {
@@ -85,7 +87,6 @@ export class SkyfireProvider implements LanguageModelV1 {
 
               let data
               try {
-                // Remove any prefix before the actual JSON data
                 const jsonStart = line.indexOf("{")
                 if (jsonStart !== -1) {
                   const jsonString = line.slice(jsonStart)
@@ -122,14 +123,25 @@ export class SkyfireProvider implements LanguageModelV1 {
                 }
 
                 if (choice.delta && choice.delta.function_call) {
-                  const functionCall = choice.delta.function_call
-                  controller.enqueue({
-                    type: "tool-call",
-                    toolCallType: "function",
-                    toolCallId: functionCall.name,
-                    toolName: functionCall.name,
-                    args: functionCall.arguments,
-                  } as LanguageModelV1StreamPart)
+                  if (!currentFunctionCall) {
+                    currentFunctionCall = {
+                      toolCallType: "function",
+                      toolCallId: choice.delta.function_call.name || "",
+                      toolName: choice.delta.function_call.name || "",
+                      args: "",
+                    }
+                  }
+                  if (choice.delta.function_call.arguments) {
+                    currentFunctionCall.args +=
+                      choice.delta.function_call.arguments
+                  }
+                  if (choice.index === choice.delta.function_call.index) {
+                    controller.enqueue({
+                      type: "tool-call",
+                      ...currentFunctionCall,
+                    } as LanguageModelV1StreamPart)
+                    currentFunctionCall = undefined
+                  }
                 }
               }
             }
@@ -157,6 +169,47 @@ export class SkyfireProvider implements LanguageModelV1 {
     options: LanguageModelV1CallOptions,
     stream: boolean
   ) {
+    let functions
+    let functionCall
+
+    if (options.mode.type === "regular") {
+      functions = options.mode.tools?.map((tool) => ({
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.parameters,
+      }))
+      functionCall = options.mode.toolChoice
+    } else if (options.mode.type === "object-tool") {
+      functions = [
+        {
+          name: options.mode.tool.name,
+          description: options.mode.tool.description,
+          parameters: options.mode.tool.parameters,
+        },
+      ]
+      functionCall = { name: options.mode.tool.name }
+    }
+
+    // const systemMessage = {
+    //   role: "system",
+    //   content: this.useJsonResponseFormat
+    //     ? "Always respond with a JSON object that includes 'action' and 'content' fields. The 'action' field should describe the type of response, and the 'content' field should contain the actual response text. Your response must be valid JSON."
+    //     : "Respond in a clear and concise manner.",
+    // }
+
+    // const messages = [systemMessage, ...options.prompt]
+
+    // // Ensure 'json' is mentioned in the messages when using JSON response format
+    // if (
+    //   this.useJsonResponseFormat &&
+    //   !messages.some((msg) => msg.content.toLowerCase().includes("json"))
+    // ) {
+    //   messages.push({
+    //     role: "system",
+    //     content: "Remember to format your response as a JSON object.",
+    //   })
+    // }
+
     const response = await fetch(
       `${SKYFIRE_ENDPOINT_URL}/proxy/openrouter/v1/chat/completions`,
       {
@@ -169,8 +222,6 @@ export class SkyfireProvider implements LanguageModelV1 {
           model: this.modelId,
           messages: options.prompt,
           stream: stream,
-          ...options.mode,
-          ...options.providerMetadata?.skyfire,
         }),
       }
     )
@@ -183,7 +234,10 @@ export class SkyfireProvider implements LanguageModelV1 {
             "Your account balance is too low for this transaction. Please top-up your account to proceed.",
         })
       }
-      throw new AISDKError({ name: "APIError", message: "API request failed" })
+      throw new AISDKError({
+        name: "APIError",
+        message: `API request failed with status ${response.status}`,
+      })
     }
 
     return response
