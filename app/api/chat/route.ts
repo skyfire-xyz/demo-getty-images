@@ -1,65 +1,48 @@
 import { NextResponse } from "next/server"
-import { OpenAIStream, StreamingTextResponse, convertToCoreMessages } from "ai"
+import { convertToCoreMessages, streamText } from "ai"
 
 import { SKYFIRE_ENDPOINT_URL } from "@/lib/skyfire-sdk/env"
 
-export async function POST(request: Request) {
-  const req = await request.json()
-  const apiKey = request.headers.get("skyfire-api-key")
-  const { messages } = req
+import { SkyfireProvider } from "./skyfire-provider"
+
+// import { CustomProvider } from "./custom-provider"
+
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30
+
+export async function POST(req: Request) {
+  const { messages } = await req.json()
+  const apiKey = req.headers.get("skyfire-api-key")
 
   if (!apiKey) {
-    return NextResponse.json({ message: "Missing API Key" }, { status: 401 })
+    return NextResponse.json({ error: "Missing API Key" }, { status: 401 })
   }
 
-  const streamResponse = await fetch(
-    `${SKYFIRE_ENDPOINT_URL}/proxy/openrouter/v1/chat/completions`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "skyfire-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        model: "openai/chatgpt-4o-latest",
-        messages: convertToCoreMessages(messages),
-        stream: true,
-      }),
-    }
-  )
-
-  if (!streamResponse.ok) {
-    if (streamResponse.status === 402) {
-      return NextResponse.json(
-        "Your account balance is too low for this transaction. Please top-up your account to proceed.",
-        { status: streamResponse.status }
-      )
-    }
+  if (!SKYFIRE_ENDPOINT_URL) {
     return NextResponse.json(
-      { message: "API request failed" },
-      { status: streamResponse.status }
+      { error: "Missing Skyfire Endpoint URL" },
+      { status: 500 }
     )
   }
 
-  if (streamResponse.body) {
-    const stream = OpenAIStream(streamResponse)
-    const transformStream = new TransformStream({
-      transform(chunk, controller) {
-        // Pass through the original chunk
-        controller.enqueue(chunk)
-      },
+  const skyfireProvider = new SkyfireProvider(
+    "openai/chatgpt-4o-latest",
+    apiKey
+  )
+
+  try {
+    const result = await streamText({
+      model: skyfireProvider,
+      messages: convertToCoreMessages(messages),
     })
-    const modifiedStream = stream.pipeThrough(transformStream)
-    const response = new StreamingTextResponse(modifiedStream)
 
-    // Add any headers from the original streamResponse
-    const headerEntries = Array.from(streamResponse.headers.entries())
-    for (const [key, value] of headerEntries) {
-      if (key.toLowerCase().startsWith("skyfire-")) {
-        response.headers.set(key, value)
-      }
-    }
-
-    return response
+    // Return the streaming response
+    return result.toDataStreamResponse()
+  } catch (error) {
+    console.error("Error:", error)
+    return NextResponse.json(
+      { error: "An error occurred during the request" },
+      { status: 500 }
+    )
   }
 }
