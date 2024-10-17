@@ -49,6 +49,7 @@ interface GettyImagesContextType {
   removeDownloadedItem: (id: string) => void
   fetchPurchaseHistory: () => Promise<void>
   clearSearchAndPurchaseHistory: () => void
+  findImageById: (imageId: string) => ImageSearchResult | undefined
 }
 
 const GettyImagesContext = createContext<GettyImagesContextType | undefined>(
@@ -88,6 +89,10 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [])
 
+  const findImageById = (imageId: string): ImageSearchResult | undefined => {
+    return searchResults.find((image) => image.id === imageId)
+  }
+
   const searchImages = async (
     phrase: string,
     page: number,
@@ -108,7 +113,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
             useWithChat: true,
             correspondingPageURLs: ["/"],
             customPrompts: [
-              "Can you describe the images?",
+              "Which one is your favorite?",
               "What are the most common themes in these images?",
             ],
             replaceExisting: true,
@@ -161,10 +166,8 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         "v1/receivers/getty-images/images/download",
         {
           id,
-          height: `${height}`,
           size,
           tosConfirmation: tosConfirmation.tosAgreed,
-          userEmail: "koji@skyfire.xyz",
         },
         {
           metadataForAgent: {
@@ -280,6 +283,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         removeDownloadedItem,
         fetchPurchaseHistory,
         clearSearchAndPurchaseHistory,
+        findImageById,
       }}
     >
       {children}

@@ -5,6 +5,8 @@ import { useChat } from "ai/react"
 import { Layers, MessageCircle } from "lucide-react"
 
 import { useGettyImages } from "@/lib/getty-images/context"
+import { gettyImagesInstruction } from "@/lib/getty-images/instruction"
+import { downloadImageFile } from "@/lib/getty-images/util"
 import { clearResponses } from "@/lib/skyfire-sdk/context/action"
 import { useSkyfireAPIKey } from "@/lib/skyfire-sdk/context/context"
 import { useIsMobile } from "@/hooks/use-is-mobile"
@@ -28,6 +30,8 @@ export default function IndexPage() {
     searchTerm,
     setSearchTerm,
     fetchPurchaseHistory,
+    downloadImage,
+    findImageById,
   } = useGettyImages()
   const [showHistory, setShowHistory] = useState(false)
   const { localAPIKey } = useSkyfireAPIKey()
@@ -54,42 +58,55 @@ export default function IndexPage() {
     }
   }
 
-  const handleAIResponse = (content: string) => {
+  const handleDownload = async (
+    imageName: string,
+    imageId: string,
+    size: string
+  ) => {
+    try {
+      const selectedImage = findImageById(imageId)
+      await downloadImageFile({
+        selectedImage,
+        selectedSize: size,
+        downloadImage,
+      })
+      console.log(
+        `Successfully initiated download for ${imageName} (ID: ${imageId}) in ${size} resolution`
+      )
+    } catch (error) {
+      console.error("Error initiating download:", error)
+    }
+  }
+
+  const handleAIResponse = async (content: string) => {
     const searchRegex =
       /I'll search for images of (.*?)\. Here's what I found:/i
     const historyRegex =
       /I'll show your purchase history\. Here's what I found:/i
+    const downloadRegex =
+      /Ok, I will initiate the purchase and download for "(.*?)" \(ID: (\d+)\) in (.*?) \((\d+) x \d+ pixels\) resolution\./i
 
     const searchMatch = content.match(searchRegex)
     const historyMatch = content.match(historyRegex)
+    const downloadMatch = content.match(downloadRegex)
 
     if (searchMatch) {
       const searchQuery = searchMatch[1].trim()
       handleSearch(searchQuery)
     } else if (historyMatch) {
       handleHistory()
+    } else if (downloadMatch) {
+      const [, imageName, imageId, size] = downloadMatch
+      await handleDownload(imageName, imageId, size)
     }
   }
-
+  // ![Alt text](https://images.url.abcde/example/image.svg "Name(Image ID)")
   const aiChatProps = useChat({
     initialMessages: [
       {
         id: "instruction",
         role: "system",
-        content: `
-          You are an AI assistant that can help with image searches and show purchase history. 
-
-When you need to search for images, use the following format in your response:
-"I'll search for images of [description]. Here's what I found:"
-Replace [description] with what you're searching for. For example:
-"I'll search for images of a sunset over the mountains. Here's what I found:"
-When the user asks to see their purchase history, use the following format:
-"I'll show your purchase history. Here's what I found:"
-Please note that you cannot display images or purchase history directly here, but they will be shown in another panel, so you don't need to worry about that.
-After providing the image search or purchase history statement, insert a few empty lines without using HTML br tag before summarizing the results or providing additional information.
-IMPORTANT: When responding to queries about purchase history or images, only use the information provided by these specific prompts. Do not make up or invent any information about purchase history or image search results. If you don't have the necessary information to respond, simply use the appropriate prompt without adding any extra details.
-For all other queries unrelated to purchase history or image searches, you may respond normally based on your general knowledge and capabilities.
-`,
+        content: gettyImagesInstruction,
       },
     ],
     headers: {

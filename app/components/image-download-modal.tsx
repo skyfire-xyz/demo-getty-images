@@ -5,7 +5,7 @@ import { Download, Info } from "lucide-react"
 import { toast } from "react-toastify"
 
 import { useGettyImages } from "@/lib/getty-images/context"
-import { calculateEstimatedPrice } from "@/lib/getty-images/util"
+import { downloadImageFile } from "@/lib/getty-images/util"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -30,53 +30,21 @@ export default function ImageDetailsModal({
   onClose,
   selectedImage,
 }: ImageDetailsModalProps) {
-  const { downloadImage, addDownloadedItem } = useGettyImages()
+  const { downloadImage } = useGettyImages()
   const [selectedSize, setSelectedSize] = useState("")
   const [downloadLoading, setDownloadLoading] = useState(false)
 
   const handleDownload = async () => {
-    if (!selectedSize) {
-      toast.error("Please select a size to download.")
-      return
-    }
-
     setDownloadLoading(true)
     try {
-      const selectedSizeObj = selectedImage.download_sizes.find(
-        (size: any) => size.name === selectedSize
-      )
-      if (!selectedSizeObj) {
-        throw new Error("Selected size not found")
-      }
-
-      const result = await downloadImage(
-        selectedImage.id,
-        selectedSizeObj.height,
-        selectedSize
-      )
-      if (result && result.uri) {
-        const response = await fetch(result.uri)
-        if (!response.ok) {
-          throw new Error("Download failed")
-        }
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.style.display = "none"
-        a.href = url
-        a.download = `${selectedImage.title}_${selectedSize}.jpg`
-        document.body.appendChild(a)
-        a.click()
-        window.URL.revokeObjectURL(url)
-
-        toast.success(`The image has been downloaded successfully.`)
-        onClose()
-      } else {
-        throw new Error("Failed to get download URL")
-      }
+      await downloadImageFile({
+        selectedImage,
+        selectedSize,
+        downloadImage,
+      })
+      onClose()
     } catch (error) {
-      console.error("Download failed:", error)
-      toast.error("Failed to download the image. Please try again.")
+      // Error is already handled in downloadImageFile
     } finally {
       setDownloadLoading(false)
     }
