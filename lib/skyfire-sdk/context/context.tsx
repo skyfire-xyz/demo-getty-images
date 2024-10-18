@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
 } from "react"
 import axios, { AxiosInstance, AxiosResponse, isAxiosError } from "axios"
 
@@ -30,7 +31,7 @@ import {
   usdAmount,
 } from "../util"
 import { initialState, skyfireReducer } from "./reducer"
-import { SkyfireState } from "./type"
+import { PaymentClaim, SkyfireState } from "./type"
 
 declare module "axios" {
   export interface AxiosRequestConfig {
@@ -53,6 +54,7 @@ interface SkyfireContextType {
   replaceExistingResponse: (response: AxiosResponse) => void
   resetResponses: () => void
   getClaimByReferenceID: (referenceId: string | null) => Promise<boolean>
+  fetchAndCompareClaims: () => Promise<void>
 }
 
 export const getItemNamesFromResponse = (response: AxiosResponse): string => {
@@ -67,6 +69,7 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(skyfireReducer, initialState)
+  const previousClaimsRef = useRef<PaymentClaim[] | null>(state.claims)
 
   // Create a memoized Axios instance
   const apiClient = useMemo(() => {
@@ -157,6 +160,42 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [])
 
+  const fetchAndCompareClaims = async () => {
+    if (!apiClient) return
+
+    try {
+      const response = await apiClient.get("/v1/wallet/claims")
+      const newClaims = response.data.claims
+
+      const previousClaims = previousClaimsRef.current || []
+
+      if (Array.isArray(newClaims)) {
+        const previousClaimsSet = new Set(
+          previousClaims.map((claim) => claim.id)
+        )
+
+        const spent = newClaims.reduce((acc, claim) => {
+          if (!previousClaimsSet.has(claim.id)) {
+            return acc + Number(claim.value)
+          }
+          return acc
+        }, 0)
+        if (spent > 0) {
+          toast({
+            title: `Spent ${usdAmount(spent)}`,
+            duration: 3000,
+          })
+        }
+        previousClaimsRef.current = newClaims
+      } else {
+        console.error("Unexpected data format for claims:", newClaims)
+      }
+    } catch (error) {
+      console.error("Error fetching claims:", error)
+    }
+    await fetchUserBalance()
+  }
+
   async function fetchUserBalance() {
     if (apiClient) {
       try {
@@ -174,6 +213,7 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
     if (apiClient) {
       try {
         const res = await apiClient.get("/v1/wallet/claims")
+        previousClaimsRef.current = res.data.claims
         dispatch(updateSkyfireClaims(res.data))
       } catch (e: unknown) {
         if (isAxiosError(e)) {
@@ -234,6 +274,7 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
         replaceExistingResponse,
         resetResponses,
         getClaimByReferenceID,
+        fetchAndCompareClaims,
       }}
     >
       {children}

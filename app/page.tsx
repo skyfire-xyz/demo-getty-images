@@ -8,7 +8,7 @@ import { useGettyImages } from "@/lib/getty-images/context"
 import { gettyImagesInstruction } from "@/lib/getty-images/instruction"
 import { downloadImageFile } from "@/lib/getty-images/util"
 import { clearResponses } from "@/lib/skyfire-sdk/context/action"
-import { useSkyfireAPIKey } from "@/lib/skyfire-sdk/context/context"
+import { useSkyfire, useSkyfireAPIKey } from "@/lib/skyfire-sdk/context/context"
 import { useIsMobile } from "@/hooks/use-is-mobile"
 import { Button } from "@/components/ui/button"
 import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
@@ -30,12 +30,11 @@ export default function IndexPage() {
     searchTerm,
     setSearchTerm,
     fetchPurchaseHistory,
-    downloadImage,
-    findImageById,
     showHistory,
     setShowHistory,
   } = useGettyImages()
   const { localAPIKey } = useSkyfireAPIKey()
+  const { fetchAndCompareClaims } = useSkyfire()
 
   const isMobile = useIsMobile(768) // Consider mobile for screens smaller than 1024px
 
@@ -91,7 +90,8 @@ export default function IndexPage() {
       setErrorMessage(error.message || "An error occurred during the chat.")
     },
     onFinish: async (messages) => {
-      console.log(messages, "messages")
+      console.log(messages, "messages onFinish")
+      fetchAndCompareClaims()
     },
     onResponse: async (response) => {
       console.log(response, "response")
