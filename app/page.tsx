@@ -32,8 +32,9 @@ export default function IndexPage() {
     fetchPurchaseHistory,
     downloadImage,
     findImageById,
+    showHistory,
+    setShowHistory,
   } = useGettyImages()
-  const [showHistory, setShowHistory] = useState(false)
   const { localAPIKey } = useSkyfireAPIKey()
 
   const isMobile = useIsMobile(768) // Consider mobile for screens smaller than 1024px
@@ -55,26 +56,6 @@ export default function IndexPage() {
       await fetchPurchaseHistory()
     } catch (error) {
       console.error("Error performing search:", error)
-    }
-  }
-
-  const handleDownload = async (
-    imageName: string,
-    imageId: string,
-    size: string
-  ) => {
-    try {
-      const selectedImage = findImageById(imageId)
-      await downloadImageFile({
-        selectedImage,
-        selectedSize: size,
-        downloadImage,
-      })
-      console.log(
-        `Successfully initiated download for ${imageName} (ID: ${imageId}) in ${size} resolution`
-      )
-    } catch (error) {
-      console.error("Error initiating download:", error)
     }
   }
 

@@ -31,9 +31,12 @@ export default function ImageDetailsModal({
   onClose,
   selectedImage,
 }: ImageDetailsModalProps) {
-  const { downloadImage } = useGettyImages()
+  const { downloadImage, findPurchasedImageById } = useGettyImages()
   const [selectedSize, setSelectedSize] = useState("")
   const [downloadLoading, setDownloadLoading] = useState(false)
+
+  const purchasedItem = findPurchasedImageById(selectedImage?.id)
+  const isPurchased = !!purchasedItem
 
   const handleDownload = async () => {
     setDownloadLoading(true)
@@ -141,13 +144,15 @@ export default function ImageDetailsModal({
             <Button onClick={onClose} variant="outline">
               Close
             </Button>
-            <Button
-              onClick={handleDownload}
-              disabled={downloadLoading || !selectedSize}
-            >
-              {downloadLoading ? "Downloading..." : "Purchase & Download"}
-              <Download className="ml-2 h-4 w-4" />
-            </Button>
+            {!isPurchased && (
+              <Button
+                onClick={handleDownload}
+                disabled={downloadLoading || !selectedSize}
+              >
+                {downloadLoading ? "Downloading..." : "Purchase & Download"}
+                <Download className="ml-2 h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
