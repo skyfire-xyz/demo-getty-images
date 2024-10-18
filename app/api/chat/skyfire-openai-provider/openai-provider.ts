@@ -138,7 +138,7 @@ Create an OpenAI provider instance.
 export function createSkyfireOpenAI(
   options: OpenAIProviderSettings = {}
 ): OpenAIProvider {
-  const baseURL = `${SKYFIRE_ENDPOINT_URL}/proxy/openai/v1/`
+  const baseURL = `${SKYFIRE_ENDPOINT_URL}/proxy/openai/v1`
 
   // we default to compatible, because strict breaks providers like Groq:
   const compatibility = options.compatibility ?? "compatible"
@@ -227,6 +227,6 @@ export function createSkyfireOpenAI(
 /**
 Default OpenAI provider instance. It uses 'strict' compatibility mode.
  */
-export const openai = createOpenAI({
+export const openai = createSkyfireOpenAI({
   compatibility: "strict", // strict for OpenAI API
 })

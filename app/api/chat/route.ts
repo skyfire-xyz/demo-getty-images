@@ -31,6 +31,22 @@ export async function POST(req: Request) {
     const result = await streamText({
       model: skyfireWithOpenAI("gpt-4o"),
       messages: messages,
+      tools: {
+        search_images: tool({
+          description: "Search for images",
+          parameters: z.object({ query: z.string() }),
+        }),
+        show_history: tool({
+          description: "Show purchase history",
+          parameters: z.object({}),
+        }),
+        show_images: tool({
+          description: "Talk about images",
+          parameters: z.object({
+            imageIDs: z.array(z.string()),
+          }),
+        }),
+      },
     })
 
     // Return the streaming response

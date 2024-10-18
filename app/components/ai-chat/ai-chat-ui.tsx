@@ -144,49 +144,60 @@ export default function AIChatUI({
                 return false
               return true
             })
-            .map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                } mb-4`}
-              >
-                <div
-                  className={`flex max-w-[100%] ${
-                    message.role === "user" ? "flex-row-reverse" : "flex-row"
-                  } items-start`}
-                >
-                  <Avatar className="w-8 h-8 flex-shrink-0">
-                    <AvatarFallback>
-                      {message.role === "user" ? "U" : "AI"}
-                    </AvatarFallback>
-                    <AvatarImage
-                      src={
-                        message.role === "user"
-                          ? "/user-avatar.png"
-                          : "/ai-avatar.png"
-                      }
-                      alt={
-                        message.role === "user" ? "User Avatar" : "AI Avatar"
-                      }
-                    />
-                  </Avatar>
+            .map((message) => {
+              return (
+                <>
                   <div
-                    className={`mx-2 p-3 rounded-lg ${
-                      message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "max-w-[calc(100%-50px)] bg-muted"
-                    } break-words`}
+                    key={message.id}
+                    className={`flex ${
+                      message.role === "user" ? "justify-end" : "justify-start"
+                    } mb-4`}
                   >
-                    <MemoizedReactMarkdown>
-                      {message.role === "system"
-                        ? message.content.split("<data-response>")[0]
-                        : message.content}
-                    </MemoizedReactMarkdown>
+                    <div
+                      className={`flex max-w-[100%] ${
+                        message.role === "user"
+                          ? "flex-row-reverse"
+                          : "flex-row"
+                      } items-start`}
+                    >
+                      <Avatar className="w-8 h-8 flex-shrink-0">
+                        <AvatarFallback>
+                          {message.role === "user" ? "U" : "AI"}
+                        </AvatarFallback>
+                        <AvatarImage
+                          src={
+                            message.role === "user"
+                              ? "/user-avatar.png"
+                              : "/ai-avatar.png"
+                          }
+                          alt={
+                            message.role === "user"
+                              ? "User Avatar"
+                              : "AI Avatar"
+                          }
+                        />
+                      </Avatar>
+                      <div
+                        className={`mx-2 p-3 rounded-lg ${
+                          message.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "max-w-[calc(100%-50px)] bg-muted"
+                        } break-words`}
+                      >
+                        <MemoizedReactMarkdown>
+                          {message.role === "system"
+                            ? message.content.split("<data-response>")[0]
+                            : message.content}
+                        </MemoizedReactMarkdown>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                  {message.toolInvocations?.map((tool) => {
+                    return <div>{JSON.stringify(tool)}</div>
+                  })}
+                </>
+              )
+            })}
           {isLoading && (
             <div className="flex justify-start items-start mb-4">
               <div className="flex items-start">
