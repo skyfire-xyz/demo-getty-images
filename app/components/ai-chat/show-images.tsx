@@ -108,17 +108,19 @@ export default function ChatImageDisplay({ imageIDs }: ChatImageDisplayProps) {
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </CardContent>
-        <CardFooter>
-          <Button
-            variant="outline"
-            className="mx-auto"
-            onClick={() => {
-              setShowHistory(true)
-            }}
-          >
-            See my purchase history
-          </Button>
-        </CardFooter>
+        {showingHistory.current && (
+          <CardFooter>
+            <Button
+              variant="outline"
+              className="mx-auto"
+              onClick={() => {
+                setShowHistory(true)
+              }}
+            >
+              See my purchase history
+            </Button>
+          </CardFooter>
+        )}
       </Card>
       {selectedImage && (
         <ImageDetailsModal

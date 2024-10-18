@@ -90,6 +90,12 @@ export default function IndexPage() {
     onError: (error: Error) => {
       setErrorMessage(error.message || "An error occurred during the chat.")
     },
+    onFinish: async (messages) => {
+      console.log(messages, "messages")
+    },
+    onResponse: async (response) => {
+      console.log(response, "response")
+    },
   })
 
   useEffect(() => {
