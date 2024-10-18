@@ -32,8 +32,9 @@ export default function IndexPage() {
     fetchPurchaseHistory,
     downloadImage,
     findImageById,
+    showHistory,
+    setShowHistory,
   } = useGettyImages()
-  const [showHistory, setShowHistory] = useState(false)
   const { localAPIKey } = useSkyfireAPIKey()
 
   const isMobile = useIsMobile(768) // Consider mobile for screens smaller than 1024px
@@ -58,49 +59,6 @@ export default function IndexPage() {
     }
   }
 
-  const handleDownload = async (
-    imageName: string,
-    imageId: string,
-    size: string
-  ) => {
-    try {
-      const selectedImage = findImageById(imageId)
-      await downloadImageFile({
-        selectedImage,
-        selectedSize: size,
-        downloadImage,
-      })
-      console.log(
-        `Successfully initiated download for ${imageName} (ID: ${imageId}) in ${size} resolution`
-      )
-    } catch (error) {
-      console.error("Error initiating download:", error)
-    }
-  }
-
-  const handleAIResponse = async (content: string) => {
-    const searchRegex =
-      /I'll search for images of (.*?)\. Here's what I found:/i
-    const historyRegex =
-      /I'll show your purchase history\. Here's what I found:/i
-    const downloadRegex =
-      /Ok, I will initiate the purchase and download for "(.*?)" \(ID: (\d+)\) in (.*?) \((\d+) x \d+ pixels\) resolution\./i
-
-    const searchMatch = content.match(searchRegex)
-    const historyMatch = content.match(historyRegex)
-    const downloadMatch = content.match(downloadRegex)
-
-    if (searchMatch) {
-      const searchQuery = searchMatch[1].trim()
-      handleSearch(searchQuery)
-    } else if (historyMatch) {
-      handleHistory()
-    } else if (downloadMatch) {
-      const [, imageName, imageId, size] = downloadMatch
-      await handleDownload(imageName, imageId, size)
-    }
-  }
-  // ![Alt text](https://images.url.abcde/example/image.svg "Name(Image ID)")
   const aiChatProps = useChat({
     initialMessages: [
       {
@@ -112,11 +70,31 @@ export default function IndexPage() {
     headers: {
       "skyfire-api-key": localAPIKey || "",
     },
-    onFinish: (res) => {
-      handleAIResponse(res.content)
+    onToolCall: (tool) => {
+      switch (tool.toolCall.toolName) {
+        case "search_images":
+          const { query } = tool.toolCall.args as { query: string }
+          handleSearch(query)
+          break
+        case "show_history":
+          handleHistory()
+          break
+        case "show_images":
+          // possibly show loading indicator
+          break
+        case "purchase_images":
+          // possibly show loading indicator
+          break
+      }
     },
     onError: (error: Error) => {
       setErrorMessage(error.message || "An error occurred during the chat.")
+    },
+    onFinish: async (messages) => {
+      console.log(messages, "messages")
+    },
+    onResponse: async (response) => {
+      console.log(response, "response")
     },
   })
 
@@ -132,27 +110,6 @@ export default function IndexPage() {
 
   const leftPanel = (
     <AIChatUI aiChatProps={aiChatProps} errorMessage={errorMessage} />
-  )
-
-  const rightPanel = (
-    <>
-      {!searchTerm && !showHistory && (
-        <div className="flex h-full items-center overflow-hidden">
-          <AnimatedAspectRatioImageGallery />
-        </div>
-      )}
-      {searchTerm && (
-        <div className="h-full pt-24">
-          <SearchInfo />
-          <ImagesSearchWithPagination key={searchTerm} />
-        </div>
-      )}
-      {showHistory && (
-        <div className="h-full">
-          <PurchaseHistory />
-        </div>
-      )}
-    </>
   )
 
   if (!localAPIKey) return null

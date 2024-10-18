@@ -30,6 +30,24 @@ interface DownloadImageParams {
   downloadImage: (id: string, height: number, size: string) => Promise<any>
 }
 
+export const downloadFile = async (uri: string, filename: string) => {
+  const response = await fetch(uri)
+  if (!response.ok) {
+    throw new Error("Download failed")
+  }
+  const blob = await response.blob()
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.style.display = "none"
+  a.href = url
+  a.download = `${filename}.jpg`
+  document.body.appendChild(a)
+  a.click()
+  window.URL.revokeObjectURL(url)
+
+  toast.success(`The image has been downloaded successfully.`)
+}
+
 export const downloadImageFile = async ({
   selectedImage,
   selectedSize,

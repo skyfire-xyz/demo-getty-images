@@ -50,6 +50,9 @@ interface GettyImagesContextType {
   fetchPurchaseHistory: () => Promise<void>
   clearSearchAndPurchaseHistory: () => void
   findImageById: (imageId: string) => ImageSearchResult | undefined
+  findPurchasedImageById: (imageId: string) => PurchaseHistoryItem | undefined
+  showHistory: boolean
+  setShowHistory: (show: boolean) => void
 }
 
 const GettyImagesContext = createContext<GettyImagesContextType | undefined>(
@@ -81,6 +84,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [totalImages, setTotalImages] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
+  const [showHistory, setShowHistory] = useState(false)
 
   useEffect(() => {
     const storedItems = localStorage.getItem("downloadedItems")
@@ -89,8 +93,24 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [])
 
+  useEffect(() => {
+    async function fetch() {
+      await fetchPurchaseHistory()
+    }
+    fetch()
+  }, [client])
+
   const findImageById = (imageId: string): ImageSearchResult | undefined => {
-    return searchResults.find((image) => image.id === imageId)
+    const image = searchResults.find((image) => image.id === imageId)
+    return image
+  }
+  const findPurchasedImageById = (
+    imageId: string
+  ): PurchaseHistoryItem | undefined => {
+    const claim = purchaseHistory.find(
+      (item) => item.attributes.gettyImage.id === imageId
+    )
+    return claim
   }
 
   const searchImages = async (
@@ -114,7 +134,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
             correspondingPageURLs: ["/"],
             customPrompts: [
               "Which one is your favorite?",
-              "What are the most common themes in these images?",
+              "Select your favorite image and purchase the small size.",
             ],
             replaceExisting: true,
           },
@@ -284,6 +304,9 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
         fetchPurchaseHistory,
         clearSearchAndPurchaseHistory,
         findImageById,
+        findPurchasedImageById,
+        showHistory,
+        setShowHistory,
       }}
     >
       {children}

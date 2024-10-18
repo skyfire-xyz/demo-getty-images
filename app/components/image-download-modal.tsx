@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Download, Info } from "lucide-react"
 import { toast } from "react-toastify"
 
@@ -30,9 +31,12 @@ export default function ImageDetailsModal({
   onClose,
   selectedImage,
 }: ImageDetailsModalProps) {
-  const { downloadImage } = useGettyImages()
+  const { downloadImage, findPurchasedImageById } = useGettyImages()
   const [selectedSize, setSelectedSize] = useState("")
   const [downloadLoading, setDownloadLoading] = useState(false)
+
+  const purchasedItem = findPurchasedImageById(selectedImage?.id)
+  const isPurchased = !!purchasedItem
 
   const handleDownload = async () => {
     setDownloadLoading(true)
@@ -59,11 +63,13 @@ export default function ImageDetailsModal({
         </DialogHeader>
         <ScrollArea className="flex-grow px-6 py-4 overflow-y-auto">
           <div className="space-y-6">
-            <div className="aspect-w-16 aspect-h-9">
-              <img
+            <div className="relative w-full h-64 md:h-80">
+              <Image
                 src={selectedImage?.display_sizes[0].uri}
                 alt={selectedImage?.title}
-                className="object-cover w-full h-full rounded-lg"
+                layout="fill"
+                objectFit="contain"
+                className="rounded-lg"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,13 +144,15 @@ export default function ImageDetailsModal({
             <Button onClick={onClose} variant="outline">
               Close
             </Button>
-            <Button
-              onClick={handleDownload}
-              disabled={downloadLoading || !selectedSize}
-            >
-              {downloadLoading ? "Downloading..." : "Purchase & Download"}
-              <Download className="ml-2 h-4 w-4" />
-            </Button>
+            {!isPurchased && (
+              <Button
+                onClick={handleDownload}
+                disabled={downloadLoading || !selectedSize}
+              >
+                {downloadLoading ? "Downloading..." : "Purchase & Download"}
+                <Download className="ml-2 h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
