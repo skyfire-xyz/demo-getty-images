@@ -114,7 +114,7 @@ export const GettyImagesProvider: React.FC<{ children: React.ReactNode }> = ({
             correspondingPageURLs: ["/"],
             customPrompts: [
               "Which one is your favorite?",
-              "What are the most common themes in these images?",
+              "Select your favorite image and purchase the small size.",
             ],
             replaceExisting: true,
           },
