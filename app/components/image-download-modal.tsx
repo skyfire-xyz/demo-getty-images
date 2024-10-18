@@ -144,15 +144,13 @@ export default function ImageDetailsModal({
             <Button onClick={onClose} variant="outline">
               Close
             </Button>
-            {!isPurchased && (
-              <Button
-                onClick={handleDownload}
-                disabled={downloadLoading || !selectedSize}
-              >
-                {downloadLoading ? "Downloading..." : "Purchase & Download"}
-                <Download className="ml-2 h-4 w-4" />
-              </Button>
-            )}
+            <Button
+              onClick={handleDownload}
+              disabled={downloadLoading || !selectedSize}
+            >
+              {downloadLoading ? "Downloading..." : "Purchase & Download"}
+              <Download className="ml-2 h-4 w-4" />
+            </Button>
           </div>
         </div>
       </DialogContent>
