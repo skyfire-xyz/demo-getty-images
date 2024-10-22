@@ -1,29 +1,17 @@
 "use client"
 
-import { use, useEffect, useMemo, useRef, useState } from "react"
-import { usePathname, useSearchParams } from "next/navigation"
-import { ToolInvocation } from "ai"
-import { UseChatHelpers, useChat } from "ai/react"
-import { Axios, AxiosResponse } from "axios"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { usePathname } from "next/navigation"
+import { UseChatHelpers } from "ai/react"
+import { AxiosResponse } from "axios"
 import { AlertCircle, ChevronDown, X } from "lucide-react"
 
-import { MemoizedReactMarkdown } from "@/lib/skyfire-sdk/components/markdown"
-import {
-  getItemNamesFromResponse,
-  useSkyfireResponses,
-} from "@/lib/skyfire-sdk/context/context"
+import { useSkyfireResponses } from "@/lib/skyfire-sdk/context/context"
 import { addDatasets } from "@/lib/skyfire-sdk/hooks"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 
 import ChatBlob from "./chat-blob"
 import ImageDownloadInfo from "./image-download-info"

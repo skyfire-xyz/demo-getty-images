@@ -59,6 +59,7 @@ export default function IndexPage() {
   }
 
   const aiChatProps = useChat({
+    api: "/api/getty",
     initialMessages: [
       {
         id: "instruction",

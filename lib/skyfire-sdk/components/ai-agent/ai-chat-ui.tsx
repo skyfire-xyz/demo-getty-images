@@ -21,8 +21,8 @@ import {
 import {
   getItemNamesFromResponse,
   useSkyfireResponses,
-} from "../context/context"
-import { addDatasets } from "../hooks"
+} from "../../context/context"
+import { addDatasets } from "../../hooks"
 import { MemoizedReactMarkdown } from "./markdown"
 
 interface AIChatPanelProps {
