@@ -17,6 +17,8 @@ export class PurchaseImagesTool extends BaseTool {
     1. First, respond to the user acknowledging their request and informing them that you'll initiate the purchase for those images. If user didn't specify the sizes of the image, you show the list of the available sizes for the user to choose. (also pricing of those images)
     2. If user specify the size of the image, respond to the user that acknowledge their request and inform them that you'll initiate the purchase for those images and sizes.
     3. Then, execute the "purchase_images" tool with imageIDs as the parameter. Image ID can be found in the JSON object that's been sent before asking the question.
+
+    Make sure to purchase images that you and the user have just discussed. Also, if you are purchasing more than 5 images, you need to confirm with the user before proceeding with the purchase.
   `
 
   public override createTool() {
