@@ -24,7 +24,7 @@ import {
   updateTOSAgreement,
 } from "@/lib/skyfire-sdk/context/action"
 
-import { toast } from "../shadcn/hooks/use-toast"
+import { toast } from "../custom-shadcn/hooks/use-toast"
 import {
   getApiKeyFromLocalStorage,
   removeApiKeyFromLocalStorage,

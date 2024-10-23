@@ -1,21 +1,18 @@
+"use client"
+
 import React, { useRef, useState } from "react"
 import Image from "next/image"
 
+import ImageDetailsModal from "@/lib/getty-images/components/image-download-modal"
 import { useGettyImages } from "@/lib/getty-images/context"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
-import ImageDetailsModal from "../image-download-modal"
-
-interface ChatImageDisplayProps {
-  imageIDs: string[]
-}
-
 const IMAGE_HEIGHT = 200
 const IMAGE_WIDTH = 300
 
-export default function ChatImageDisplay({ imageIDs }: ChatImageDisplayProps) {
+export const Component: React.FC<{ imageIDs: string[] }> = ({ imageIDs }) => {
   const { findImageById, findPurchasedImageById, setShowHistory } =
     useGettyImages()
   const [selectedImage, setSelectedImage] = useState<any | null>(null)

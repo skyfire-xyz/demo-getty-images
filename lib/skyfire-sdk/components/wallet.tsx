@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import AIChatPanel from "../ai-agent/ai-chat-ui"
 import { updateSkyfireAPIKey } from "../context/action"
 import { useSkyfire, useSkyfireState } from "../context/context"
 import { usdAmount } from "../util"
-import AIChatPanel from "./ai-agent/ai-chat-ui"
 import { ClaimsWidget } from "./claims"
 import LogoutButton from "./logout"
 import { WalletDetailsPanel } from "./tab-balance-details"

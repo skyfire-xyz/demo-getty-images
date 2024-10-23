@@ -6,6 +6,11 @@ import { UseChatHelpers } from "ai/react"
 import { AxiosResponse } from "axios"
 import { AlertCircle, ChevronDown, X } from "lucide-react"
 
+import ChatBlob from "@/lib/skyfire-sdk/ai-agent/chat-blob"
+import {
+  ComposeEmailTool,
+  SendEmailTool,
+} from "@/lib/skyfire-sdk/ai-agent/tools"
 import { useSkyfireResponses } from "@/lib/skyfire-sdk/context/context"
 import { addDatasets } from "@/lib/skyfire-sdk/hooks"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -13,9 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 
-import ChatBlob from "./chat-blob"
-import ImageDownloadInfo from "./image-download-info"
-import ChatImageDisplay from "./show-images"
+import { PurchaseImagesTool, ShowImagesTool } from "../ai-agent/tools"
 
 interface AIChatPanelProps {
   aiChatProps: UseChatHelpers
@@ -83,12 +86,11 @@ export default function AIChatUI({
     }
   }, [])
 
-  const handleQuickPrompt = (prompt: string) => {
+  const handleManualSubmit = (prompt: string) => {
     const event = {
       target: { value: prompt },
     } as React.ChangeEvent<HTMLInputElement>
     handleInputChange(event)
-    setShowQuickPrompts(false)
     setTimeout(() => {
       if (formRef.current) {
         formRef.current.requestSubmit()
@@ -98,11 +100,20 @@ export default function AIChatUI({
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
     addDatasets(responses, messages, setMessages)
-
     handleSubmit(e)
   }
+
+  const filteredMessages = messages.filter((message) => {
+    if (
+      (message.role === "user" &&
+        (message.content.startsWith("<Data>") ||
+          message.content.startsWith("<Email>"))) ||
+      message.id === "instruction"
+    )
+      return false
+    return true
+  })
 
   return (
     <Card
@@ -127,32 +138,65 @@ export default function AIChatUI({
               </div>
             </div>
           </div>
-          {messages
-            .filter((message) => {
-              if (
-                (message.role === "user" &&
-                  message.content.startsWith("<Data>")) ||
-                message.id === "instruction"
-              )
-                return false
-              return true
-            })
-            .map((message) => {
-              return (
-                <>
-                  <ChatBlob message={message} />
-                  {message.toolInvocations?.map((tool) => {
-                    if (tool.toolName === "purchase_images") {
-                      if (tool.state === "result" && tool.result) {
-                        return <ImageDownloadInfo data={tool.result} />
-                      }
-                    } else if (tool.toolName === "show_images") {
-                      return <ChatImageDisplay imageIDs={tool.args.imageIDs} />
-                    }
-                  })}
-                </>
-              )
-            })}
+          {filteredMessages.map((message, index) => (
+            <>
+              <ChatBlob key={message.id} message={message} />
+              {message.toolInvocations?.map((tool, toolIndex) => {
+                if (tool.toolName === "purchase_images") {
+                  if (tool.state === "result" && tool.result) {
+                    return (
+                      <PurchaseImagesTool.ClientComponent
+                        key={toolIndex}
+                        data={tool.result}
+                      />
+                    )
+                  }
+                } else if (tool.toolName === "show_images") {
+                  return (
+                    <ShowImagesTool.ClientComponent
+                      key={toolIndex}
+                      imageIDs={tool.args.imageIDs}
+                    />
+                  )
+                } else if (tool.toolName === "compose_email") {
+                  return (
+                    <ComposeEmailTool.ClientComponent
+                      key={toolIndex}
+                      initialData={{
+                        to: tool.args.to,
+                        subject: tool.args.subject,
+                        body: tool.args.body,
+                      }}
+                      disabled={index !== filteredMessages.length - 1}
+                      onSubmit={async (args) => {
+                        setMessages([
+                          ...messages,
+                          {
+                            id: `send_email_${index}`,
+                            role: "user",
+                            content: `<Email>${JSON.stringify(args)}`,
+                          },
+                        ])
+                        handleManualSubmit(`Email to ${args.to}`)
+                      }}
+                      onCancel={() => {
+                        console.log("cancel")
+                      }}
+                    />
+                  )
+                } else if (tool.toolName === "send_email") {
+                  if (tool.state === "result" && tool.result) {
+                    return (
+                      <SendEmailTool.ClientComponent
+                        result={JSON.parse(tool.result.content)}
+                      />
+                    )
+                  }
+                }
+                return null
+              })}
+            </>
+          ))}
           {isLoading && (
             <div className="flex justify-start items-start mb-4">
               <div className="flex items-start">
@@ -198,7 +242,10 @@ export default function AIChatUI({
                 key={index}
                 variant="outline"
                 size="sm"
-                onClick={() => handleQuickPrompt(prompt)}
+                onClick={() => {
+                  setShowQuickPrompts(false)
+                  handleManualSubmit(prompt)
+                }}
               >
                 {prompt}
               </Button>

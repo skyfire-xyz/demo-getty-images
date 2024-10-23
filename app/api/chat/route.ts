@@ -1,9 +1,8 @@
-import { rootCertificates } from "tls"
 import { NextResponse } from "next/server"
 import { createOpenAI } from "@ai-sdk/openai"
-import { streamText, tool } from "ai"
-import { z } from "zod"
+import { streamText } from "ai"
 
+import { createTools, toolsInstruction } from "@/lib/skyfire-sdk/ai-agent/tools"
 import { SKYFIRE_ENDPOINT_URL } from "@/lib/skyfire-sdk/env"
 
 export const maxDuration = 30
@@ -32,23 +31,17 @@ export async function POST(req: Request) {
   })
 
   try {
+    const tools = createTools(SKYFIRE_ENDPOINT_URL, apiKey)
+
     const instruction = {
       role: "system",
-      content: `
-        Tool 1: When user talked about images, you can use the tool "show_images" and provide imageURLs.
-      `,
+      content: toolsInstruction,
     }
+
     const result = await streamText({
       model: skyfireWithOpenAI("gpt-4o"),
       messages: [instruction, ...messages],
-      tools: {
-        show_images: tool({
-          description: "Talk about images",
-          parameters: z.object({
-            imageURLs: z.array(z.string()),
-          }),
-        }),
-      },
+      tools,
     })
 
     // Return the streaming response

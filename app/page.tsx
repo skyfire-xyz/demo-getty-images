@@ -5,7 +5,6 @@ import { useChat } from "ai/react"
 import { Layers, MessageCircle } from "lucide-react"
 
 import { useGettyImages } from "@/lib/getty-images/context"
-import { gettyImagesInstruction } from "@/lib/getty-images/instruction"
 import { downloadImageFile } from "@/lib/getty-images/util"
 import { clearResponses } from "@/lib/skyfire-sdk/context/action"
 import { useSkyfire, useSkyfireAPIKey } from "@/lib/skyfire-sdk/context/context"
@@ -13,13 +12,13 @@ import { useIsMobile } from "@/hooks/use-is-mobile"
 import { Button } from "@/components/ui/button"
 import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 
-import AIChatUI from "./components/ai-chat/ai-chat-ui"
-import ImagesSearchWithPagination from "./components/getty-image-search-with-pagination"
-import { PurchaseHistory } from "./components/purchase-history"
-import { AnimatedAspectRatioImageGallery } from "./components/random-image-grid"
-import { SearchInfo } from "./components/search-info"
-import { TwoPanelLayout } from "./components/two-panel-layout"
-import TwoPanelLayoutMobile from "./components/two-panel-mobile"
+import AIChatUI from "../lib/getty-images/components/ai-chat-ui"
+import ImagesSearchWithPagination from "../lib/getty-images/components/getty-image-search-with-pagination"
+import { PurchaseHistory } from "../lib/getty-images/components/purchase-history"
+import { AnimatedAspectRatioImageGallery } from "../lib/getty-images/components/random-image-grid"
+import { SearchInfo } from "../lib/getty-images/components/search-info"
+import { TwoPanelLayout } from "../lib/getty-images/components/two-panel-layout"
+import TwoPanelLayoutMobile from "../lib/getty-images/components/two-panel-mobile"
 
 export default function IndexPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -60,13 +59,6 @@ export default function IndexPage() {
 
   const aiChatProps = useChat({
     api: "/api/getty",
-    initialMessages: [
-      {
-        id: "instruction",
-        role: "system",
-        content: gettyImagesInstruction,
-      },
-    ],
     headers: {
       "skyfire-api-key": localAPIKey || "",
     },
