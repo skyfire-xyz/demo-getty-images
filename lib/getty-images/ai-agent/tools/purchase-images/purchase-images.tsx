@@ -19,6 +19,7 @@ export class PurchaseImagesTool extends BaseTool {
     3. Then, execute the "purchase_images" tool with imageIDs as the parameter. Image ID can be found in the JSON object that's been sent before asking the question.
 
     Make sure to purchase images that you and the user have just discussed. Also, if you are purchasing more than 5 images, you need to confirm with the user before proceeding with the purchase.
+    Make sure to confirm the sizes, if not specified by the user.
   `
 
   public override createTool() {
