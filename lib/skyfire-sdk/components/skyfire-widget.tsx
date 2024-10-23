@@ -19,7 +19,7 @@ import {
   useSkyfireState,
   useSkyfireTOSAgreement,
 } from "../context/context"
-import { Toaster } from "../shadcn/ui/toaster"
+import { Toaster } from "../custom-shadcn/ui/toaster"
 import { usdAmount } from "../util"
 import { ApiKeyConfig } from "./api-key-config"
 import { APIKeyConfigWithTOS } from "./api-key-config-with-tos"

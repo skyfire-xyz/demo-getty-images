@@ -2,7 +2,10 @@ import { NextResponse } from "next/server"
 import { createOpenAI } from "@ai-sdk/openai"
 import { streamText } from "ai"
 
-import { createTools, toolsInstruction } from "@/lib/skyfire-sdk/ai-agent/tools"
+import {
+  createTools,
+  toolsInstruction,
+} from "@/lib/getty-images/ai-agent/tools"
 import { SKYFIRE_ENDPOINT_URL } from "@/lib/skyfire-sdk/env"
 
 export const maxDuration = 30
@@ -31,18 +34,29 @@ export async function POST(req: Request) {
   })
 
   try {
+    // Create tools
     const tools = createTools(SKYFIRE_ENDPOINT_URL, apiKey)
-
-    const instruction = {
-      role: "system",
-      content: toolsInstruction,
-    }
 
     const result = await streamText({
       model: skyfireWithOpenAI("gpt-4o"),
-      messages: [instruction, ...messages],
+      messages: [
+        {
+          role: "system",
+          content: `You are an AI assistant that can help with image searches and show purchase history`,
+        },
+        { role: "system", content: toolsInstruction }, // Instructions fortools
+        {
+          role: "system",
+          content: `Always respond to the user's request with a text message first before using any tools.
+Remember, in all cases, always provide a text response to the user before executing any tool. This ensures clear communication and sets expectations for the user about what actions you're taking.
+Also when you display price of the image, you must divide the amount that you get from the JSON data by 1,000,000 and display it as dollars. For example, if the amount is 1000, you should display it as $0.001.`,
+        },
+        ...messages,
+      ],
       tools,
     })
+
+    console.log(toolsInstruction, "toolsInstruction")
 
     // Return the streaming response
     return result.toDataStreamResponse()
