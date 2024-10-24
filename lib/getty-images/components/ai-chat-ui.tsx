@@ -43,6 +43,7 @@ export default function AIChatUI({
   const formRef = useRef<HTMLFormElement>(null)
 
   const quickPrompts = useMemo(() => {
+    if (!responses || responses.length === 0) return new Set<string>()
     return new Set<string>(
       responses.reduce(
         (arr: string[], res: AxiosResponse) => {
