@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { createOpenAI } from "@ai-sdk/openai"
-import { streamText } from "ai"
+import { AISDKError, APICallError, streamText } from "ai"
 
 import { createTools, toolsInstruction } from "@/lib/skyfire-sdk/ai-agent/tools"
 import { SKYFIRE_ENDPOINT_URL } from "@/lib/skyfire-sdk/env"
@@ -43,14 +43,28 @@ export async function POST(req: Request) {
       messages: [instruction, ...messages],
       tools,
     })
-
     // Return the streaming response
     return result.toDataStreamResponse()
   } catch (error) {
-    console.error("Error:", error)
-    return NextResponse.json(
-      { error: "An error occurred during the request" },
-      { status: 500 }
-    )
+    if (error instanceof AISDKError) {
+      const apiError = error as APICallError
+      if (apiError) {
+        try {
+          const errorResponse = JSON.parse(apiError.responseBody || "{}")
+          switch (errorResponse.code) {
+            case "USER_LIMITS_EXCEEDED":
+              return NextResponse.json(errorResponse.message, { status: 429 })
+            default:
+              return NextResponse.json(apiError.message, {
+                status: apiError.statusCode,
+              })
+          }
+        } catch (e) {}
+      }
+    }
+
+    return NextResponse.json("An error occurred during the request", {
+      status: 500,
+    })
   }
 }
