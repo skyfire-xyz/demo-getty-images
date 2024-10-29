@@ -15,14 +15,11 @@ export async function POST(req: Request) {
   const apiKey = req.headers.get("skyfire-api-key")
 
   if (!apiKey) {
-    return NextResponse.json({ error: "Missing API Key" }, { status: 401 })
+    return NextResponse.json("Missing API Key", { status: 401 })
   }
 
   if (!SKYFIRE_ENDPOINT_URL) {
-    return NextResponse.json(
-      { error: "Missing Skyfire Endpoint URL" },
-      { status: 500 }
-    )
+    return NextResponse.json("Missing Skyfire Endpoint URL", { status: 500 })
   }
 
   // Use OpenAI Provider, but replace the base URL with the Skyfire endpoint
