@@ -21,7 +21,10 @@ import { TwoPanelLayout } from "../lib/getty-images/components/two-panel-layout"
 import TwoPanelLayoutMobile from "../lib/getty-images/components/two-panel-mobile"
 
 export default function IndexPage() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<{
+    message: string
+    data: any
+  } | null>(null)
   const [isOpen, setIsOpen] = useState(true) // Drawer open state
   const {
     clearSearchAndPurchaseHistory,
@@ -80,7 +83,18 @@ export default function IndexPage() {
       }
     },
     onError: (error: Error) => {
-      setErrorMessage(error.message || "An error occurred during the chat.")
+      let data
+      if (error.message.includes("Payment amount exceeds")) {
+        const match = error.message.match(/rule id: ([0-9a-f-]+)/)
+        const ruleId = match ? match[1] : null
+        data = {
+          ruleId,
+        }
+      }
+      setErrorMessage(
+        { message: error.message, data: data } ||
+          "An error occurred during the chat."
+      )
     },
     onFinish: async (messages) => {
       console.log(messages, "messages onFinish")

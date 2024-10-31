@@ -62,7 +62,7 @@ Also when you display price of the image, you must divide the amount that you ge
         try {
           const errorResponse = JSON.parse(apiError.responseBody || "{}")
           switch (errorResponse.code) {
-            case "USER_LIMITS_EXCEEDED":
+            case "USER_RULE_EXCEEDED":
               return NextResponse.json(errorResponse.message, { status: 429 })
             default:
               return NextResponse.json(apiError.message, {

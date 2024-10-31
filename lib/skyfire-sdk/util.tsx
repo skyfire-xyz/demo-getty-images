@@ -62,8 +62,7 @@ export function usdAmount(usdc: number | string) {
   if (typeof usdc === "string") {
     usdc = usdc.split(" ")[0]
   }
-  // Converts USDC to USD by dividing by 1,000,000
-  const usdAmount = Number(usdc) / 1000000
+  const usdAmount = Number(usdc)
   return "$" + usdAmount.toFixed(7) + " USD"
 }
 

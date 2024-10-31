@@ -13,6 +13,8 @@ export const initialState: SkyfireState = {
   error: null,
   responses: [],
   tosAgreed: false,
+  rules: [],
+  receivers: [],
 }
 
 export const skyfireReducer = (
@@ -92,6 +94,16 @@ export const skyfireReducer = (
       return {
         ...state,
         tosAgreed: action.payload,
+      }
+    case ActionType.UPDATE_SKYFIRE_RULES:
+      return {
+        ...state,
+        ...action.payload,
+      }
+    case ActionType.UPDATE_SKYFIRE_RECEIVERS:
+      return {
+        ...state,
+        receivers: action.payload,
       }
     default:
       return state
