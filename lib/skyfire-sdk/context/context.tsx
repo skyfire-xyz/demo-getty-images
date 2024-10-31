@@ -201,8 +201,7 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
     if (apiClient) {
       try {
         const res = await apiClient.get("/v1/users/receivers/list")
-
-        // dispatch(updateSkyfireWallet(res.data))
+        dispatch(updateSkyfireWallet(res.data))
       } catch (e) {
         if (isAxiosError(e)) {
           dispatch(updateError(e))
@@ -363,7 +362,6 @@ export const useSkyfireRules = () => {
 
 export const useSkyfireRuleById = (ruleId: string) => {
   const { state } = useSkyfire()
-  console.log(state, "state?.rules")
   return state?.rules.find((rule) => rule.id === ruleId)
 }
 
