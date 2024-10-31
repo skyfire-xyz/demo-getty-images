@@ -119,7 +119,6 @@ export default function AIChatUI({
     return true
   })
 
-  console.log(errorMessage, "errorMessage")
   return (
     <Card
       className="w-full mx-auto flex flex-col h-[calc(100vh-380px)]"

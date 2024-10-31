@@ -62,8 +62,6 @@ function ChatUserRoleError({ ruleId }: { ruleId: string }) {
 export default function ChatErrorMessage({
   errorMessage,
 }: ChatErrorMessageProps) {
-  console.log(errorMessage, "errorMessage")
-
   if (errorMessage?.data) {
     if (errorMessage.data.ruleId) {
       return <ChatUserRoleError ruleId={errorMessage.data.ruleId} />
