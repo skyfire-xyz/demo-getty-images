@@ -49,7 +49,7 @@ export async function POST(req: Request) {
         try {
           const errorResponse = JSON.parse(apiError.responseBody || "{}")
           switch (errorResponse.code) {
-            case "USER_LIMITS_EXCEEDED":
+            case "USER_RULE_EXCEEDED":
               return NextResponse.json(errorResponse.message, { status: 429 })
             default:
               return NextResponse.json(apiError.message, {

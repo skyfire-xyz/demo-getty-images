@@ -13,6 +13,8 @@ export enum ActionType {
   CLEAR_RESPONSES = "CLEAR_RESPONSES", // New action type
   UPDATE_TOS_AGREEMENT = "UPDATE_TOS_AGREEMENT",
   REPLACE_RESPONSE = "REPLACE_RESPONSE",
+  UPDATE_SKYFIRE_RULES = "UPDATE_SKYFIRE_RULES",
+  UPDATE_SKYFIRE_RECEIVERS = "UPDATE_SKYFIRE_RECEIVERS",
 }
 
 interface UpdateSkyfireInfoAction {
@@ -64,6 +66,16 @@ interface UpdateTOSAgreementAction {
   payload: boolean
 }
 
+interface UpdateSkyfireRulesAction {
+  type: ActionType.UPDATE_SKYFIRE_RULES
+  payload: any
+}
+
+interface UpdateSkyfireReceiversAction {
+  type: ActionType.UPDATE_SKYFIRE_RECEIVERS
+  payload: any
+}
+
 // Actions Types
 export type SkyfireAction =
   | UpdateSkyfireInfoAction
@@ -76,6 +88,8 @@ export type SkyfireAction =
   | ClearResponsesAction
   | UpdateTOSAgreementAction
   | ReplaceResponseAction
+  | UpdateSkyfireRulesAction
+  | UpdateSkyfireReceiversAction
 
 // Actions
 export const updateSkyfireInfo = (data: SkyfireState): SkyfireAction => ({
@@ -132,4 +146,14 @@ export const clearResponses = (): SkyfireAction => ({
 export const updateTOSAgreement = (agreed: boolean): SkyfireAction => ({
   type: ActionType.UPDATE_TOS_AGREEMENT,
   payload: agreed,
+})
+
+export const updateSkyfireRules = (rules: any): SkyfireAction => ({
+  type: ActionType.UPDATE_SKYFIRE_RULES,
+  payload: rules,
+})
+
+export const updateSkyfireReceivers = (rules: any): SkyfireAction => ({
+  type: ActionType.UPDATE_SKYFIRE_RECEIVERS,
+  payload: rules,
 })

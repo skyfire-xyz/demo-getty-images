@@ -11,6 +11,7 @@ import {
   ComposeEmailTool,
   SendEmailTool,
 } from "@/lib/skyfire-sdk/ai-agent/tools"
+import ChatErrorMessage from "@/lib/skyfire-sdk/components/chat-error-message"
 import { useSkyfireResponses } from "@/lib/skyfire-sdk/context/context"
 import { addDatasets } from "@/lib/skyfire-sdk/hooks"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -22,7 +23,10 @@ import { PurchaseImagesTool, ShowImagesTool } from "../ai-agent/tools"
 
 interface AIChatPanelProps {
   aiChatProps: UseChatHelpers
-  errorMessage?: string | null
+  errorMessage?: {
+    message: string
+    data: any
+  } | null
 }
 
 export default function AIChatUI({
@@ -217,13 +221,7 @@ export default function AIChatUI({
               </div>
             </div>
           )}
-          {errorMessage && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          )}
+          {errorMessage && <ChatErrorMessage errorMessage={errorMessage} />}
         </div>
         {showScrollButton && (
           <Button

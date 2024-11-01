@@ -78,6 +78,35 @@ export type PaymentClaimResponse = {
   claims: PaymentClaim[]
 }
 
+export const FREQUENCY_TYPES = {
+  PER_TRANSACTION: {
+    type: "PER_TRANSACTION",
+    displayName: "Per Transaction",
+  },
+  DAILY: { type: "DAILY", displayName: "Daily", days: 1 },
+  SEVEN_DAY: { type: "SEVEN_DAY", displayName: "7 Day Rolling", days: 7 },
+  THIRTY_DAY: { type: "THIRTY_DAY", displayName: "30 Day Rolling", days: 30 },
+} as const
+
+export type FrequencyType = keyof typeof FREQUENCY_TYPES
+
+// Skyfire State
+export interface Rule {
+  id?: string
+  type: "TRANSACTION" | "DURATION"
+  amount: string
+  targetWalletAddress?: string
+  frequency?: FrequencyType
+}
+
+export interface Receiver {
+  id: string
+  username: string
+  email: string
+  isDynamicPricing: boolean
+  walletAddress: string
+}
+
 // Skyfire State
 export interface SkyfireState {
   localAPIKey: string | null
@@ -89,4 +118,6 @@ export interface SkyfireState {
   error: AxiosError | null
   responses: AxiosResponse[]
   tosAgreed?: boolean
+  rules: Rule[]
+  receivers: Receiver[]
 }

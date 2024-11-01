@@ -20,6 +20,7 @@ import {
   updateError,
   updateSkyfireAPIKey,
   updateSkyfireClaims,
+  updateSkyfireRules,
   updateSkyfireWallet,
   updateTOSAgreement,
 } from "@/lib/skyfire-sdk/context/action"
@@ -196,6 +197,32 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
     await fetchUserBalance()
   }
 
+  async function fetchReceivers() {
+    if (apiClient) {
+      try {
+        const res = await apiClient.get("/v1/users/receivers/list")
+        dispatch(updateSkyfireWallet(res.data))
+      } catch (e) {
+        if (isAxiosError(e)) {
+          dispatch(updateError(e))
+        }
+      }
+    }
+  }
+
+  async function fetchUserRules() {
+    if (apiClient) {
+      try {
+        const res = await apiClient.get("/v1/users/rules")
+        dispatch(updateSkyfireRules(res.data))
+      } catch (e) {
+        if (isAxiosError(e)) {
+          dispatch(updateError(e))
+        }
+      }
+    }
+  }
+
   async function fetchUserBalance() {
     if (apiClient) {
       try {
@@ -260,6 +287,8 @@ export const SkyfireProvider: React.FC<{ children: ReactNode }> = ({
     if (apiClient) {
       fetchUserBalance()
       fetchUserClaims()
+      fetchUserRules()
+      fetchReceivers()
     }
   }, [apiClient])
 
@@ -324,6 +353,21 @@ export const useSkyfireResponses = (pathname: string) => {
     return filterResponsesByUrl(state?.responses, pathname)
   }
   return state?.responses
+}
+
+export const useSkyfireRules = () => {
+  const { state } = useSkyfire()
+  return state?.rules
+}
+
+export const useSkyfireRuleById = (ruleId: string) => {
+  const { state } = useSkyfire()
+  return state?.rules.find((rule) => rule.id === ruleId)
+}
+
+export const useSkyfireReceivers = () => {
+  const { state } = useSkyfire()
+  return state?.receivers
 }
 
 function isUrlMatch(pathname: string, urlPatterns: string[]): boolean {

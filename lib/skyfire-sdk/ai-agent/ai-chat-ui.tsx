@@ -17,12 +17,16 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 
+import ChatErrorMessage from "../components/chat-error-message"
 import ChatBlob from "./chat-blob"
 import { ComposeEmailTool, SendEmailTool, ShowImagesTool } from "./tools"
 
 interface AIChatPanelProps {
   aiChatProps: UseChatHelpers
-  errorMessage?: string | null
+  errorMessage?: {
+    message: string
+    data: any
+  } | null
 }
 
 export default function AIChatUI({
@@ -226,13 +230,7 @@ export default function AIChatUI({
               </div>
             </div>
           )}
-          {errorMessage && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          )}
+          {errorMessage && <ChatErrorMessage errorMessage={errorMessage} />}
         </div>
         {showScrollButton && (
           <Button
