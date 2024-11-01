@@ -20,7 +20,10 @@ import { WalletDetailsPanel } from "./tab-balance-details"
 
 interface WalletInterfaceProps {
   aiChatProps: UseChatHelpers
-  errorMessage?: string | null
+  errorMessage?: {
+    message: string
+    data: any
+  } | null
 }
 export function WalletInterface({
   aiChatProps,
